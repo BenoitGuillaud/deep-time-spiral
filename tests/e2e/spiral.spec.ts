@@ -31,7 +31,7 @@ test('shows the spiral, the zoom lens and every event picture without errors', a
 test('opens a card with the age and its source when a picture is tapped', async ({ page }) => {
   await openSpiral(page);
 
-  await page.getByRole('button', { name: /^The last big dinosaurs,/ }).click();
+  await page.getByRole('button', { name: /^T\. rex: The last big dinosaurs,/ }).click();
   const card = page.getByRole('dialog', { name: en['event.last-dinosaurs.title'] });
   await expect(card).toBeVisible();
   await expect(card.getByText('66 million years ago', { exact: true })).toBeVisible();
