@@ -53,10 +53,21 @@ and information are considered to be in the U.S. Public Domain."
 
 ## Event ages (non-ICS)
 
-_Added in milestone M1. One full citation per entry in `src/data/events.json`, including its URL and the date it was accessed._
+Full citations, with the place in each source where the number appears, live in `src/data/events.json`; a test fails
+if any event lacks one. Events taken from the ICS chart (start of the Cambrian, end of the Cretaceous, start of the
+Holocene) point at the chart boundary instead of copying the number.
 
 | Event | Value used | Citation | URL | Accessed |
 |---|---|---|---|---|
+| Big Bang | 13.787 ± 0.020 billion years | Planck Collaboration (2020). Planck 2018 results. VI. Cosmological parameters. *A&A* 641, A6. Table 2, TT,TE,EE+lowE+lensing+BAO. | https://doi.org/10.1051/0004-6361/201833910 | 2026-10-22 |
+| Sun and planets form | 4567.30 ± 0.16 million years | Connelly, J. N., et al. (2012). The absolute chronology and thermal processing of solids in the solar protoplanetary disk. *Science* 338(6107), 651–655. Abstract. | https://doi.org/10.1126/science.1226919 | 2026-10-22 |
+| Earth | 4.54 billion years | Dalrymple, G. B. (2001). The age of the Earth in the twentieth century: a problem (mostly) solved. *Geol. Soc. London Spec. Publ.* 190, 205–221. Abstract. | https://doi.org/10.1144/GSL.SP.2001.190.01.14 | 2026-10-22 |
+| First life (at least) | 3.48 billion years | Djokic, T., et al. (2017). Earliest signs of life on land preserved in ca. 3.5 Ga hot spring deposits. *Nature Communications* 8, 15263. Abstract. | https://doi.org/10.1038/ncomms15263 | 2026-10-22 |
+| First dinosaurs | about 230 million years | Martinez, R. N., et al. (2011). A basal dinosaur from the dawn of the dinosaur era in southwestern Pangaea. *Science* 331(6014), 206–210. Summary. | https://doi.org/10.1126/science.1198467 | 2026-10-22 |
+| First people like us (*Homo sapiens*) | 315 ± 34 thousand years | Richter, D., et al. (2017). The age of the hominin fossils from Jebel Irhoud, Morocco, and the origins of the Middle Stone Age. *Nature* 546(7657), 293–296. Abstract. | https://doi.org/10.1038/nature22335 | 2026-10-22 |
+
+`TODO(source)`: the pyramids rung (about 4,500 years) still needs a source that states the Great Pyramid's date; the
+radiocarbon studies checked so far (Bonani et al. 2001; Bronk Ramsey et al. 2010) do not give it in their abstracts.
 
 ## Illustrations
 

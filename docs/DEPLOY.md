@@ -15,10 +15,10 @@ npm run build && npm run preview
 ## 2. GitHub Pages (milestone M0)
 
 - [x] `pages.yml` builds on every push to `main` with `VITE_BASE=/deep-time-spiral/` and deploys to Pages.
-- [ ] Enable Pages with the source set to **GitHub Actions**:
+- [x] Enable Pages with the source set to **GitHub Actions** (done with the API call below on 2026-10-22):
       `gh api -X POST repos/BenoitGuillaud/deep-time-spiral/pages -f build_type=workflow`.
       If that fails: 🧑 Repo → Settings → Pages → Source → **GitHub Actions**.
-- [ ] Verify: `curl -I https://benoitguillaud.github.io/deep-time-spiral/` returns `200`.
+- [x] Verify: `curl -I https://benoitguillaud.github.io/deep-time-spiral/` returns `200` (checked 2026-10-22, page and JS asset).
 
 ## 3. Vercel + custom domain (milestone M5)
 

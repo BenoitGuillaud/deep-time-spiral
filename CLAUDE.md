@@ -136,3 +136,10 @@ Proposed rungs (about 10). Exact values come from the cited sources at build tim
   - **Spiral orientation:** a flat 2D spiral seen from above, with **Now at the centre** and the past spiralling outward. This is the opposite of USGS GIP 58 (Now on the outer edge). Zooming out keeps Now fixed, so the Shrinking Dot sits at the centre.
   - **Time mapping:** honest linear scale by default. The readable log-like scale appears only inside a visible "zoom lens" frame. (GIP 58 silently stretches the Cenozoic and crushes the Precambrian.)
   - Keep from GIP 58: one continuous path a finger can trace, life pictures as the hook, few rounded numbers, a cosmic swirl at the start of time. Change: official ICS colours and names, a few big tappable icons, human-scale rungs, and a Big Bang prologue.
+- **2026-10-22/23 (M1 data, built overnight; awaiting review):**
+  - `data/ics/chart.ttl` is vendored unmodified (pinned tag, commit and SHA-256 in `data/ics/SOURCE.md`). `npm run data:ics` regenerates `src/data/ics-units.json`; a test fails if the JSON differs from a fresh extraction.
+  - **No new dependencies:** a small Turtle parser in `scripts/ics/turtle.ts` (rejects unsupported syntax) instead of `n3`, and hand-written runtime validation in `src/data/validate.ts` instead of `zod`. Either can be swapped in later if wanted.
+  - Scripts are TypeScript run directly by Node 26 (type stripping), so `tsconfig.json` has `allowImportingTsExtensions` and `erasableSyntaxOnly`.
+  - Kept ranks: super-eon, eon, era, period, sub-period, epoch (ages/stages left out). 21 epochs have no names in the chart data (e.g. "Lower Jurassic"); their `labels` are `null` rather than invented.
+  - Every cited event age records `detail`: where in the source the number appears. ICS-based events reference a unit boundary instead of copying the number.
+  - Pyramids rung: `TODO(source)`, left out until a source stating the Great Pyramid's date is checked.
