@@ -143,3 +143,10 @@ Proposed rungs (about 10). Exact values come from the cited sources at build tim
   - Kept ranks: super-eon, eon, era, period, sub-period, epoch (ages/stages left out). 21 epochs have no names in the chart data (e.g. "Lower Jurassic"); their `labels` are `null` rather than invented.
   - Every cited event age records `detail`: where in the source the number appears. ICS-based events reference a unit boundary instead of copying the number.
   - Pyramids rung: `TODO(source)`, left out until a source stating the Great Pyramid's date is checked.
+- **2026-10-23 ("whoa" spiral, built overnight on request; awaiting review):**
+  - One honest spiral from Now (centre) to the Big Bang (outer end), **even speed**: equal time = equal path length (`evenSpiralPoint`). A starry violet band (not an ICS colour) for the time before Earth, then the four eons in ICS colours.
+  - A **magnifier + light beam + zoom lens** shows the Phanerozoic (538.8 Ma → now) by ICS period. The "Zoom ×N" badge is computed from the real path lengths, so the distortion cue is honest.
+  - Turns are tuned so events spread around the clock (main 3.75 turns, lens 2.25). Badge positions are exact; only "people" (too close to now) sits beside its spot, with a pointer line to it.
+  - Tapping a picture opens a `<dialog>` card: kid-level fact, rounded age (never finer than the source), and a source link.
+  - Illustrations: PhyloPic CC0/CC BY silhouettes for animals, original code drawings for the rest. A small in-app **Credits** link meets the CC BY attribution for the ICS data and the trilobite until the M6 credits page.
+  - Not yet: pinch/scroll zoom and pan (M2), the Ladder + Shrinking Dot and tour (M3), voice and other languages (M4).

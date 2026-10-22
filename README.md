@@ -5,8 +5,10 @@ An interactive geologic time spiral that helps children aged 5–8 *feel* how ol
 Inspired by the USGS *Geologic Time Spiral* (GIP 58, 2008), with ages updated to the current
 [ICS International Chronostratigraphic Chart](https://stratigraphy.org/chart) and a cosmic prologue.
 
-> **Status:** M0 scaffold, a "hello spiral" page. Live at https://benoitguillaud.github.io/deep-time-spiral/
-> once GitHub Pages is switched on. See the milestones in [CLAUDE.md](CLAUDE.md).
+> **Status:** M0 is live at https://benoitguillaud.github.io/deep-time-spiral/. The ICS data (M1) and the
+> illustrated "whoa" spiral are in review. See the milestones in [CLAUDE.md](CLAUDE.md).
+
+![The Deep Time Spiral on a tablet: a starry spiral from the Big Bang to now, with a zoom lens on the last 539 million years](docs/screenshots/wow-tablet.jpg)
 
 ## Run it locally
 

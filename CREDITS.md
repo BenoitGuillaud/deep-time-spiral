@@ -76,6 +76,14 @@ their author, source and licence._
 
 | Image | Author | Source | Licence |
 |---|---|---|---|
+| *Tyrannosaurus rex* silhouette | Richard Rich | [PhyloPic](https://www.phylopic.org/images/ccb9b896-20b5-4e0b-8979-001742a884c5) | [CC0 1.0](https://creativecommons.org/publicdomain/zero/1.0/) |
+| *Herrerasaurus ischigualastensis* silhouette | Tasman Dixon | [PhyloPic](https://www.phylopic.org/images/3d1b4e68-f523-47c2-8945-c701a5e5d40f) | [CC0 1.0](https://creativecommons.org/publicdomain/zero/1.0/) |
+| *Fallotaspis longa* (trilobite) silhouette | Sam Gon III | [PhyloPic](https://www.phylopic.org/images/f73e5698-3cbe-4921-86fb-42a070918b41) | [CC BY 4.0](https://creativecommons.org/licenses/by/4.0/) |
+
+Changes made: the silhouettes are recoloured, resized and placed in round badges; the shapes are unchanged.
+The Big Bang, Sun and Earth, first life and people pictures, and the badges, are original drawings in code
+(`src/render/illustrations/icons.ts`). People are drawn rather than taken from PhyloPic: its *Homo sapiens* results
+were silhouettes of other human species.
 
 ## Software
 
@@ -83,10 +91,66 @@ Shipped to the browser:
 
 | Package | Licence | Notes |
 |---|---|---|
-| [D3](https://d3js.org) 7.9 | ISC | The bundle includes d3-selection, d3-shape, d3-path and d3-array (all ISC). |
+| [D3](https://d3js.org) 7.9 | ISC; `d3-ease` is BSD-3-Clause | The bundle includes d3-selection and, through it, d3-transition, d3-interpolate, d3-color, d3-timer, d3-dispatch and d3-ease. |
 
-> When D3 transitions are added, `d3-ease` comes into the bundle. It is BSD-3-Clause, and its licence notice must be
-> added here.
+Licence notices for the code shipped in the bundle (copied from the packages):
+
+<details>
+<summary>D3 (ISC)</summary>
+
+```
+Copyright 2010-2023 Mike Bostock
+
+Permission to use, copy, modify, and/or distribute this software for any purpose
+with or without fee is hereby granted, provided that the above copyright notice
+and this permission notice appear in all copies.
+
+THE SOFTWARE IS PROVIDED "AS IS" AND THE AUTHOR DISCLAIMS ALL WARRANTIES WITH
+REGARD TO THIS SOFTWARE INCLUDING ALL IMPLIED WARRANTIES OF MERCHANTABILITY AND
+FITNESS. IN NO EVENT SHALL THE AUTHOR BE LIABLE FOR ANY SPECIAL, DIRECT,
+INDIRECT, OR CONSEQUENTIAL DAMAGES OR ANY DAMAGES WHATSOEVER RESULTING FROM LOSS
+OF USE, DATA OR PROFITS, WHETHER IN AN ACTION OF CONTRACT, NEGLIGENCE OR OTHER
+TORTIOUS ACTION, ARISING OUT OF OR IN CONNECTION WITH THE USE OR PERFORMANCE OF
+THIS SOFTWARE.
+```
+
+</details>
+
+<details>
+<summary>d3-ease (BSD-3-Clause)</summary>
+
+```
+Copyright 2010-2021 Mike Bostock
+Copyright 2001 Robert Penner
+All rights reserved.
+
+Redistribution and use in source and binary forms, with or without modification,
+are permitted provided that the following conditions are met:
+
+* Redistributions of source code must retain the above copyright notice, this
+  list of conditions and the following disclaimer.
+
+* Redistributions in binary form must reproduce the above copyright notice,
+  this list of conditions and the following disclaimer in the documentation
+  and/or other materials provided with the distribution.
+
+* Neither the name of the author nor the names of contributors may be used to
+  endorse or promote products derived from this software without specific prior
+  written permission.
+
+THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND
+ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE FOR
+ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
+(INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
+LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON
+ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+(INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
+SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+```
+
+</details>
 
 Used to build and test only (not shipped):
 
