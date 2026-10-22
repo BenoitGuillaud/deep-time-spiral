@@ -5,7 +5,8 @@
   --color-path: #6c8ebf;
   --color-now: #ffd166;
 
-  --font-body: ui-rounded, 'SF Pro Rounded', system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+  --font-body:
+    ui-rounded, 'SF Pro Rounded', system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
   --touch-target: 48px;
 
   color-scheme: dark;
