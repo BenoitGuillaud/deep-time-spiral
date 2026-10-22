@@ -1,0 +1,48 @@
+:root {
+  --color-sky: #0f1b2d;
+  --color-text: #f5f1e8;
+  --color-muted: #b8c4d6;
+  --color-path: #6c8ebf;
+  --color-now: #ffd166;
+
+  --font-body: ui-rounded, 'SF Pro Rounded', system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+  --touch-target: 48px;
+
+  color-scheme: dark;
+}
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html,
+body {
+  margin: 0;
+  min-height: 100%;
+  background: var(--color-sky);
+  color: var(--color-text);
+  font-family: var(--font-body);
+}
+
+#app {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1rem;
+  min-height: 100dvh;
+  padding: 1.5rem 1rem;
+}
+
+h1 {
+  margin: 0;
+  font-size: clamp(1.75rem, 6vw, 3rem);
+  text-align: center;
+}
+
+button,
+a {
+  min-width: var(--touch-target);
+  min-height: var(--touch-target);
+}
