@@ -5,19 +5,31 @@ An interactive geologic time spiral that helps children aged 5–8 *feel* how ol
 Inspired by the USGS *Geologic Time Spiral* (GIP 58, 2008), with ages updated to the current
 [ICS International Chronostratigraphic Chart](https://stratigraphy.org/chart) and a cosmic prologue.
 
-> **Status:** bootstrapping. Nothing to run yet. See the milestones in [CLAUDE.md](CLAUDE.md).
+> **Status:** M0 scaffold, a "hello spiral" page. Live at https://benoitguillaud.github.io/deep-time-spiral/
+> once GitHub Pages is switched on. See the milestones in [CLAUDE.md](CLAUDE.md).
 
 ## Run it locally
 
-_Coming in milestone M0 (scaffold)._ Requires Node 26 (see [`.nvmrc`](.nvmrc)).
+Requires Node 26 (see [`.nvmrc`](.nvmrc)).
 
 ```bash
 npm install
-npm run dev            # live-reload dev server
-npm run dev -- --host  # also reachable from a tablet on the same Wi-Fi
-npm run test
+npm run dev            # live-reload dev server at http://localhost:5173
+npm run dev -- --host  # also reachable from a tablet on the same Wi-Fi (use the "Network" URL it prints)
 npm run build && npm run preview
 ```
+
+## Checks
+
+```bash
+npm run check                          # typecheck, lint, format check, unit tests (Vitest)
+npx playwright install chromium webkit # once, before the first e2e run
+npm run test:e2e                       # Playwright: Chromium + WebKit, tablet + phone
+npm run format                         # fix formatting
+```
+
+Every pull request runs the same checks in GitHub Actions, plus Lighthouse on mobile (accessibility ≥ 95,
+performance ≥ 90). Merging to `main` deploys to GitHub Pages.
 
 ## Project documents
 

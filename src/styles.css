@@ -1,0 +1,120 @@
+:root {
+  --color-sky: #0f1b2d;
+  --color-text: #f5f1e8;
+  --color-muted: #b8c4d6;
+  --color-path: #6c8ebf;
+  --color-now: #ffd166;
+
+  --font-body:
+    ui-rounded, 'SF Pro Rounded', system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+  --touch-target: 48px;
+
+  color-scheme: dark;
+}
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html,
+body {
+  margin: 0;
+  min-height: 100%;
+  background: var(--color-sky);
+  color: var(--color-text);
+  font-family: var(--font-body);
+}
+
+#app {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1rem;
+  min-height: 100dvh;
+  padding: 1.5rem 1rem;
+}
+
+h1 {
+  margin: 0;
+  font-size: clamp(1.75rem, 6vw, 3rem);
+  text-align: center;
+}
+
+button,
+a {
+  min-width: var(--touch-target);
+  min-height: var(--touch-target);
+}
+
+/* Hello spiral */
+
+.spiral {
+  width: min(100%, 72dvh);
+  height: auto;
+}
+
+.spiral-path {
+  fill: none;
+  stroke: var(--color-path);
+  stroke-width: 10;
+  stroke-linecap: round;
+  /* With pathLength="1", animating the offset from 1 to 0 draws the path from Now outward. */
+  stroke-dasharray: 1;
+  stroke-dashoffset: 1;
+  animation: draw-spiral 2.5s ease-out forwards;
+}
+
+.now-dot,
+.now-glow {
+  fill: var(--color-now);
+}
+
+.now-glow {
+  opacity: 0.25;
+  animation: glow 2.4s ease-in-out infinite;
+}
+
+.now-label,
+.long-ago-label {
+  font: 600 44px var(--font-body);
+  text-anchor: middle;
+  /* A halo in the background colour keeps labels readable where they cross the path. */
+  paint-order: stroke;
+  stroke: var(--color-sky);
+  stroke-width: 10px;
+  stroke-linejoin: round;
+}
+
+.now-label {
+  fill: var(--color-now);
+}
+
+.long-ago-label {
+  fill: var(--color-muted);
+}
+
+@keyframes draw-spiral {
+  to {
+    stroke-dashoffset: 0;
+  }
+}
+
+@keyframes glow {
+  50% {
+    opacity: 0.5;
+    transform: scale(1.3);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .spiral-path,
+  .now-glow {
+    animation: none;
+  }
+
+  .spiral-path {
+    stroke-dashoffset: 0;
+  }
+}

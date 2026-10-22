@@ -1,0 +1,13 @@
+# Build output and reports
+dist/
+coverage/
+playwright-report/
+test-results/
+blob-report/
+.lighthouseci/
+
+# Generated
+package-lock.json
+
+# Docs are written by hand; keep their formatting as authored.
+*.md
