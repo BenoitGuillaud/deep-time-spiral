@@ -74,6 +74,19 @@ a {
   min-height: var(--touch-target);
 }
 
+.credits-link {
+  position: absolute;
+  right: 8px;
+  bottom: 4px;
+  z-index: 1;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0 10px;
+  color: var(--color-muted);
+  font-size: 0.85rem;
+}
+
 /* Scene */
 
 .event {

@@ -18,7 +18,16 @@ header.append(heading, tagline);
 
 const stage = document.createElement('div');
 stage.className = 'stage';
-app.append(header, stage);
+// The data (ICS) and some pictures (PhyloPic) are CC BY: credit them from the app itself.
+// A full credits page comes in M6.
+const credits = document.createElement('a');
+credits.className = 'credits-link';
+credits.href = 'https://github.com/BenoitGuillaud/deep-time-spiral/blob/main/CREDITS.md';
+credits.target = '_blank';
+credits.rel = 'noopener';
+credits.textContent = t('app.credits');
+
+app.append(header, stage, credits);
 
 const openCard = createCard(document.body);
 

@@ -25,6 +25,10 @@ test('shows the spiral, the zoom lens and every event picture without errors', a
   for (const name of ['The Big Bang', 'The first dinosaurs', 'The first people like us']) {
     await expect(page.getByRole('button', { name: new RegExp(`^${name},`) })).toBeVisible();
   }
+  await expect(page.getByRole('link', { name: en['app.credits'] })).toHaveAttribute(
+    'href',
+    /CREDITS\.md$/,
+  );
   expect(errors).toEqual([]);
 });
 

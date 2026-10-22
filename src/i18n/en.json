@@ -12,6 +12,7 @@
   "age.span.million": "{n} million years",
   "age.about": "about {age}",
   "age.atLeast": "at least {age}",
+  "app.credits": "Credits",
   "card.close": "Close",
   "card.source": "Where does this number come from?",
   "event.big-bang.label": "Big Bang",
