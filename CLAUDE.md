@@ -49,13 +49,12 @@ Proposed rungs (about 10). Exact values come from the cited sources at build tim
 **Accessibility:** WCAG 2.1 AA contrast, keyboard navigation, `prefers-reduced-motion`. Colour is never the only carrier of meaning (ICS colours plus labels/icons).
 
 ## Data and attribution — HARD RULES
-1. **Ages of geologic units come only from the latest ICS International Chronostratigraphic Chart.** At the time of writing this is **v2024/12**: https://stratigraphy.org/ICSchart/ChronostratChart2024-12.pdf (landing page: https://stratigraphy.org/chart). **Check stratigraphy.org first for a newer version.** Prefer an official machine-readable ICS source if one exists; otherwise transcribe from the PDF and protect the transcription with tests.
-2. **ICS colours** come from the official ICS colour codes (RGB), not from guesses.
+1. **Ages of geologic units come only from the latest ICS International Chronostratigraphic Chart.** As of 2026-10-22 this is **v2026/06**: https://stratigraphy.org/ICSchart/ChronostratChart2026-06.pdf (landing page: https://stratigraphy.org/chart). **Check stratigraphy.org first for a newer version.** The official machine-readable source is `chart.ttl` in https://github.com/i-c-stratigraphy/chart, which ICS calls "the authoritative data" of the chart (CC BY 4.0). Generate `src/data/ics-units.json` from it with a script, pinned to a release tag (currently `v2026-06.5`). Never transcribe ages by hand. Tests spot-check the generated values against the PDF.
+2. **ICS colours** come from the official ICS colour codes (RGB), not from guesses. Use the `schema:color` hex values in `chart.ttl` (the chart's colouring follows the Commission for the Geological Map of the World, CCGM).
 3. **Every non-ICS number** (cosmic ages, first dinosaurs, Homo sapiens, pyramids…) lives in `data/events.json` with a mandatory `source` object `{citation, url, accessed}`. A test fails the build if any event lacks a source.
 4. Store the uncertainty (`±`, `~`, "at least") in the data, and render it as "about" or "at least" for kids.
 5. **Credits page plus a footer link**, reproduced faithfully:
-   - *International Chronostratigraphic Chart v2024/12 (or newer version used), © International Commission on Stratigraphy, December 2024. Reference: Cohen, K.M., Harper, D.A.T., Gibbard, P.L. & Car, N. (2025) "The ICS international chronostratigraphic chart this decade", Episodes. https://doi.org/10.18814/epiiugs/2025/025001 — https://stratigraphy.org/chart*
-     **Verify the exact author initials, journal volume and pages against the DOI landing page before publishing. Copy the wording from the source rather than paraphrasing it.**
+   - The ICS chart credit, **copied word for word from the footer of the chart version used** (never paraphrased), followed by our own line *"Chart version used: v2026/06 — https://stratigraphy.org/chart"*. The exact v2026/06 wording is recorded in `CREDITS.md`. When the chart version changes, re-copy the footer from the new chart.
    - *Inspired by: "The Geologic Time Spiral — A Path to the Past", U.S. Geological Survey General Information Product 58, version 1.1 (2008), designed by Joseph Graham, William Newman, and John Stacy. https://pubs.usgs.gov/gip/2008/58/*
    - The full citation for every source in `events.json`.
    - The licence of every illustration used.
@@ -125,3 +124,13 @@ Proposed rungs (about 10). Exact values come from the cited sources at build tim
 ## Project facts (recorded during bootstrap, 2026-10-22)
 - GitHub repo: `BenoitGuillaud/deep-time-spiral` (public).
 - Node: **26** (`.nvmrc`). Per the official Node.js release schedule, Node 26 becomes Active LTS on 2026-10-28 and is supported until 2029-04-30.
+
+## Decisions log
+- **2026-10-22 (B4 research, approved):**
+  - Use ICS chart **v2026/06**, with data generated from `chart.ttl` at tag `v2026-06.5`. Its 2026/06 changes touch only Permian/Triassic boundaries, none of the ladder rungs.
+  - `chart.ttl` also carries the **official unit names in en, fr, de and hu**. Use them; never translate geological unit names ourselves.
+  - Approximate ages ("~" on the PDF) are encoded in `chart.ttl` as `skos:note "uncertain"` on a boundary. ± values are `schema:marginOfError`.
+  - The ICS Hadean base (**4567 Ma**) is the age of the solar system's first solids, not Earth's formation. "Earth forms" (~4.54 Ga) and "solar system forms" each need their own citation in `events.json`.
+  - **Spiral orientation:** a flat 2D spiral seen from above, with **Now at the centre** and the past spiralling outward. This is the opposite of USGS GIP 58 (Now on the outer edge). Zooming out keeps Now fixed, so the Shrinking Dot sits at the centre.
+  - **Time mapping:** honest linear scale by default. The readable log-like scale appears only inside a visible "zoom lens" frame. (GIP 58 silently stretches the Cenozoic and crushes the Precambrian.)
+  - Keep from GIP 58: one continuous path a finger can trace, life pictures as the hook, few rounded numbers, a cosmic swirl at the start of time. Change: official ICS colours and names, a few big tappable icons, human-scale rungs, and a Big Bang prologue.
