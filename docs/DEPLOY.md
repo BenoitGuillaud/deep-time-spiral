@@ -14,7 +14,7 @@ npm run build && npm run preview
 
 ## 2. GitHub Pages (milestone M0)
 
-- [ ] `pages.yml` builds on every push to `main` with `VITE_BASE=/deep-time-spiral/` and deploys to Pages.
+- [x] `pages.yml` builds on every push to `main` with `VITE_BASE=/deep-time-spiral/` and deploys to Pages.
 - [ ] Enable Pages with the source set to **GitHub Actions**:
       `gh api -X POST repos/BenoitGuillaud/deep-time-spiral/pages -f build_type=workflow`.
       If that fails: 🧑 Repo → Settings → Pages → Source → **GitHub Actions**.

@@ -41,4 +41,23 @@ their author, source and licence._
 
 ## Software
 
-_Added in milestone M0: Vite, TypeScript, D3 and the other open-source libraries used, with their licences._
+Shipped to the browser:
+
+| Package | Licence | Notes |
+|---|---|---|
+| [D3](https://d3js.org) 7.9 | ISC | The bundle includes d3-selection, d3-shape, d3-path and d3-array (all ISC). |
+
+> When D3 transitions are added, `d3-ease` comes into the bundle. It is BSD-3-Clause, and its licence notice must be
+> added here.
+
+Used to build and test only (not shipped):
+
+| Package | Licence |
+|---|---|
+| Vite | MIT |
+| TypeScript | Apache-2.0 |
+| Vitest | MIT |
+| Playwright | Apache-2.0 |
+| ESLint, typescript-eslint | MIT |
+| Prettier | MIT |
+| Lighthouse CI (`@lhci/cli`) | Apache-2.0 |

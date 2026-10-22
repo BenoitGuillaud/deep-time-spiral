@@ -65,6 +65,8 @@ Proposed rungs (about 10). Exact values come from the cited sources at build tim
 ## Tech stack and architecture
 - **Vite + TypeScript (strict) + D3 v7**, with no UI framework. A small hand-rolled state/router is enough.
 - Package manager: npm. Node LTS pinned via `.nvmrc`.
+- TypeScript is pinned to **6.0.x**, not 7.x: typescript-eslint 8.x supports only `typescript <6.1.0` (checked 2026-10-22). Revisit when typescript-eslint supports TypeScript 7.
+- Visual-regression screenshots start in M2. Baselines must be made in the same Linux setup as CI (Playwright's Docker image), because screenshots differ between macOS and Linux.
 - Suggested layout:
   ```
   src/
