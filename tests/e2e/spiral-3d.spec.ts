@@ -1,9 +1,9 @@
 import { expect, test, type Page } from '@playwright/test';
 import en from '../../src/i18n/en.json' with { type: 'json' };
 
-/** The 3D vortex (three.js). Browsers without WebGL must fall back to the 2D view. */
+/** The 3D corkscrew (three.js). Browsers without WebGL must fall back to the 2D view. */
 
-const STICKERS = 7;
+const STICKERS = 4;
 
 function collectErrors(page: Page): string[] {
   const errors: string[] = [];
@@ -41,16 +41,15 @@ const stage = (page: Page) => page.locator('.stage-3d');
 const number = async (page: Page, name: 'distance' | 'azimuth'): Promise<number> =>
   Number(await stage(page).getAttribute(`data-${name}`));
 
-test('upgrades to a 3D vortex that actually draws, without errors', async ({ page }) => {
+test('upgrades to a 3D corkscrew that actually draws, without errors', async ({ page }) => {
   const errors = await open3d(page);
   await expect(stage(page)).toHaveAttribute('data-camera', 'home');
   // A blank canvas compresses to a few kilobytes; stars, ribbons and glows do not.
   const shot = await page.locator('canvas.vortex-canvas').screenshot();
   expect(shot.length).toBeGreaterThan(20_000);
-  for (const name of ['The Big Bang', 'The first dinosaurs', 'The first people like us']) {
-    await expect(page.getByRole('button', { name: new RegExp(`^${name},`) })).toBeVisible();
+  for (const name of ['The Big Bang', 'First life: The first living things', en['cluster.label']]) {
+    await expect(page.getByRole('button', { name: new RegExp(`^${name}[,:]`) })).toBeVisible();
   }
-  await expect(page.locator('.pill3d-zoom')).toHaveText(/^Zoom ×\d+$/);
   expect(errors).toEqual([]);
 });
 
@@ -59,11 +58,11 @@ test('tapping a picture flies the camera there and opens its card', async ({ pag
   await expect(stage(page)).toHaveAttribute('data-camera', 'home');
   const before = await number(page, 'distance');
 
-  await page.locator('.sticker-button[data-event="last-dinosaurs"]').click();
-  await expect(stage(page)).toHaveAttribute('data-camera', 'last-dinosaurs');
+  await page.locator('.sticker-button[data-event="first-life"]').click();
+  await expect(stage(page)).toHaveAttribute('data-camera', 'first-life');
   expect(await number(page, 'distance')).toBeLessThan(before);
-  const card = page.getByRole('dialog', { name: en['event.last-dinosaurs.title'] });
-  await expect(card.getByText('66 million years ago', { exact: true })).toBeVisible();
+  const card = page.getByRole('dialog', { name: en['event.first-life.title'] });
+  await expect(card).toBeVisible();
   await page.keyboard.press('Escape');
   await expect(card).toBeHidden();
 });
@@ -94,7 +93,7 @@ async function emptySky(page: Page): Promise<{ x: number; y: number }> {
 }
 
 // Mouse drag and wheel; touch spin and pinch use the same controls and are checked by hand on a tablet.
-test('dragging spins the vortex', async ({ page }) => {
+test('dragging spins the corkscrew', async ({ page }) => {
   await open3d(page);
   await expect(stage(page)).toHaveAttribute('data-camera', 'home');
   const { x, y } = await emptySky(page);
@@ -105,6 +104,24 @@ test('dragging spins the vortex', async ({ page }) => {
   await page.mouse.up();
   await expect.poll(() => number(page, 'azimuth')).not.toBeCloseTo(azimuth, 0);
   await expect(stage(page)).toHaveAttribute('data-camera', 'free');
+});
+
+test('with Move on, dragging slides the corkscrew instead of turning it', async ({ page }) => {
+  await open3d(page);
+  await expect(stage(page)).toHaveAttribute('data-camera', 'home');
+  const move = page.getByRole('button', { name: en['view.move'], exact: true });
+  await move.click();
+  await expect(move).toHaveAttribute('aria-pressed', 'true');
+  const { x, y } = await emptySky(page);
+  const azimuth = await number(page, 'azimuth');
+  await page.mouse.move(x, y);
+  await page.mouse.down();
+  await page.mouse.move(x + 160, y - 40, { steps: 8 });
+  await page.mouse.up();
+  await expect(stage(page)).toHaveAttribute('data-target', /./);
+  expect(await number(page, 'azimuth')).toBeCloseTo(azimuth, 0);
+  await move.click();
+  await expect(move).toHaveAttribute('aria-pressed', 'false');
 });
 
 test('the mouse wheel zooms in', async ({ page, browserName, isMobile }) => {

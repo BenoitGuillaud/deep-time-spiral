@@ -1,8 +1,8 @@
 import { describe, expect, it } from 'vitest';
 import { event, resolveAge } from '../../src/data';
 import { isMessageKey } from '../../src/i18n/i18n';
-import { formatAgo, formatSpanMillions } from '../../src/render/format';
-import { eventName, LENS_EVENTS, MAIN_EVENTS } from '../../src/render/events';
+import { formatAgo, formatSpan } from '../../src/render/format';
+import { eventName, EVENTS } from '../../src/render/events';
 
 describe('formatAgo', () => {
   it.each([
@@ -19,20 +19,21 @@ describe('formatAgo', () => {
     expect(formatAgo(resolveAge(event(id)))).toBe(expected);
   });
 
-  it('formats the lens span', () => {
-    expect(formatSpanMillions(538.8e6)).toBe('539 million years');
+  it.each([
+    [13.787e9, '13.8 billion years'],
+    [538.8e6, '539 million years'],
+    [315_000, '315,000 years'],
+  ])('formats the span %d as "%s"', (years, expected) => {
+    expect(formatSpan(years)).toBe(expected);
   });
 });
 
 describe('event texts', () => {
-  it.each([...MAIN_EVENTS, ...LENS_EVENTS].map((m) => m.id))(
-    '%s has a label, a title and a text',
-    (id) => {
-      for (const part of ['label', 'title', 'text']) {
-        expect(isMessageKey(`event.${id}.${part}`), `event.${id}.${part}`).toBe(true);
-      }
-    },
-  );
+  it.each(EVENTS.map((m) => m.id))('%s has a label, a title and a text', (id) => {
+    for (const part of ['label', 'title', 'text']) {
+      expect(isMessageKey(`event.${id}.${part}`), `event.${id}.${part}`).toBe(true);
+    }
+  });
 });
 
 describe('eventName', () => {
