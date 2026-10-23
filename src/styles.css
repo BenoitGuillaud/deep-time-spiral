@@ -18,6 +18,11 @@
   box-sizing: border-box;
 }
 
+/* `hidden` always wins over a component's own `display`. */
+[hidden] {
+  display: none !important;
+}
+
 html,
 body {
   margin: 0;
@@ -153,21 +158,8 @@ a {
 .you-label3d {
   color: var(--color-now);
   font-size: 15px;
-}
-
-.pill3d {
-  padding: 5px 14px;
-  border: 1.5px solid rgb(255 255 255 / 60%);
-  border-radius: 15px;
-  background: #0b1426;
-  font: 700 14px var(--font-body);
-  white-space: nowrap;
-}
-
-.pill3d-zoom {
-  border: none;
-  background: var(--color-now);
-  color: #1a1300;
+  /* three.js centres it on its point; shift it so the text ends there instead. */
+  translate: -50% 0;
 }
 
 /* View buttons */
@@ -212,9 +204,9 @@ a {
   outline-offset: 2px;
 }
 
-.view-bar[hidden],
-.view-button[hidden] {
-  display: none;
+.view-button[aria-pressed='true'] {
+  border-color: var(--color-now);
+  background: rgb(255 209 102 / 22%);
 }
 
 /* Scene */
@@ -254,38 +246,7 @@ a {
 .you-label {
   fill: var(--color-now);
   font-size: 15px;
-}
-
-.magnifier {
-  fill: rgb(255 255 255 / 6%);
-  stroke: rgb(255 255 255 / 75%);
-  stroke-width: 2.5;
-}
-
-.lens-rim {
-  stroke: rgb(255 255 255 / 75%);
-  stroke-width: 4;
-}
-
-.pill rect {
-  fill: #0b1426;
-  stroke: rgb(255 255 255 / 60%);
-  stroke-width: 1.5;
-}
-
-.pill text {
-  font: 700 14px var(--font-body);
-  fill: var(--color-text);
-  text-anchor: middle;
-}
-
-.pill-zoom rect {
-  fill: var(--color-now);
-  stroke: none;
-}
-
-.pill-zoom text {
-  fill: #1a1300;
+  text-anchor: end;
 }
 
 .pointer {
@@ -293,14 +254,10 @@ a {
   stroke-dasharray: 4 4;
 }
 
-/* Animations: the ribbon draws itself from Now outward, pictures pop in as it reaches them. */
+/* Animations: the ribbon draws itself from Now down to the Big Bang, pictures pop in as it reaches them. */
 
-.scene .draw {
-  /* With pathLength="1", a dash of 1 covers the whole path; animating the offset reveals it. */
-  stroke-dasharray: 1;
-  animation-name: draw-path;
-  animation-timing-function: linear;
-  animation-fill-mode: both;
+.scene .seg {
+  animation: fade-in 0.35s ease-out both;
 }
 
 .scene .pop {
@@ -323,20 +280,10 @@ a {
   animation: pulse 2.4s ease-in-out infinite;
 }
 
-.scene.static .draw,
+.scene.static .seg,
 .scene.static .pop,
 .scene.static .fade-in {
   animation: none;
-}
-
-@keyframes draw-path {
-  from {
-    stroke-dashoffset: 1;
-  }
-
-  to {
-    stroke-dashoffset: 0;
-  }
 }
 
 @keyframes pop {
@@ -377,7 +324,7 @@ a {
     animation: none;
   }
 
-  .scene .draw,
+  .scene .seg,
   .scene .pop,
   .scene .fade-in,
   .twinkle,

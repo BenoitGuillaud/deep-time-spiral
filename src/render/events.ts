@@ -1,9 +1,7 @@
-import { event as findEvent, resolveAge, unit } from '../data';
-import { evenSpiralLength, type EvenSpiral } from '../geometry/spiral';
 import { isMessageKey, t } from '../i18n/i18n';
 import type { IllustrationKind } from './illustrations/icons';
 
-/** What the 2D and 3D views share: which events get a picture, their wording, and the time spans. */
+/** What the 2D and 3D views share: which events get a picture, and their wording. */
 
 export interface EventMarker {
   id: string;
@@ -11,47 +9,22 @@ export interface EventMarker {
   ring: string;
 }
 
-/** Events on the main spiral (Big Bang → now). */
-export const MAIN_EVENTS: EventMarker[] = [
-  { id: 'big-bang', art: 'big-bang', ring: '#ffd166' },
-  { id: 'solar-system', art: 'solar-system', ring: '#ffb347' },
-  { id: 'first-life', art: 'first-life', ring: '#5fe3b1' },
-];
-
-/** Events inside the zoom lens (the Phanerozoic, 538.8 million years ago → now). */
-export const LENS_EVENTS: EventMarker[] = [
-  { id: 'animals-with-shells', art: 'trilobite', ring: '#9ad9dd' },
-  { id: 'first-dinosaurs', art: 'herrerasaurus', ring: '#f4a261' },
-  { id: 'last-dinosaurs', art: 'tyrannosaurus', ring: '#ff8a7a' },
-  { id: 'first-people', art: 'people', ring: '#ffd166' },
-];
-
-/** Every event with a picture, newest first (one spiral, so one list). */
+/** Every event with a picture, newest first. */
 export const EVENTS: EventMarker[] = [
-  ...LENS_EVENTS.slice().reverse(),
-  ...MAIN_EVENTS.slice().reverse(),
+  { id: 'first-people', art: 'people', ring: '#ffd166' },
+  { id: 'last-dinosaurs', art: 'tyrannosaurus', ring: '#ff8a7a' },
+  { id: 'first-dinosaurs', art: 'herrerasaurus', ring: '#f4a261' },
+  { id: 'animals-with-shells', art: 'trilobite', ring: '#9ad9dd' },
+  { id: 'first-life', art: 'first-life', ring: '#5fe3b1' },
+  { id: 'solar-system', art: 'solar-system', ring: '#ffb347' },
+  { id: 'big-bang', art: 'big-bang', ring: '#ffd166' },
 ];
+
+/** How far left of the Now glow (world units) the "You are here" label ends. */
+export const YOU_GAP = 0.1;
 
 /** Not an ICS colour: the time before the Earth existed. */
 export const COSMOS_COLOR = '#3b2f8f';
-
-/** The time spans of the main spiral (now → Big Bang) and of the zoom lens (the Phanerozoic), in years. */
-export function timeSpans(): { main: number; lens: number; earth: number } {
-  return {
-    main: resolveAge(findEvent('big-bang')).years,
-    lens: unit('Phanerozoic').begin.ma * 1e6,
-    earth: unit('Hadean').begin.ma * 1e6,
-  };
-}
-
-/**
- * How many times more path length one year gets inside the lens than on the main spiral, measured
- * on the honest top view (equal time = equal path length).
- */
-export function zoomFactor(main: EvenSpiral, lens: EvenSpiral): number {
-  const spans = timeSpans();
-  return evenSpiralLength(lens) / spans.lens / (evenSpiralLength(main) / spans.main);
-}
 
 export function eventTitle(id: string): string {
   const key = `event.${id}.title`;

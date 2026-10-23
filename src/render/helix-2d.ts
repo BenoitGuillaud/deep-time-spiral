@@ -9,7 +9,7 @@ import {
   viewFrame,
   type Projected,
 } from '../render3d/camera';
-import { COSMOS_COLOR } from './events';
+import { COSMOS_COLOR, YOU_GAP } from './events';
 import { outlineOf, placeFlags, type PlacedFlag } from './flag-placement';
 import type { Flag } from './flags';
 import { drawBadge } from './illustrations/icons';
@@ -117,7 +117,11 @@ function flagButton(
         onSelect(flag);
       }
     });
-  const pop = button.append('g').attr('class', 'pop');
+  // Pops in as the drawing ribbon reaches it.
+  const pop = button
+    .append('g')
+    .attr('class', 'pop')
+    .style('animation-delay', `${(flag.f * DRAW_SECONDS).toFixed(2)}s`);
   // Invisible hit area: at least 48 × 48 px even when the badge is drawn smaller.
   pop
     .append('circle')
@@ -207,7 +211,8 @@ export function renderHelix2d(container: HTMLElement, options: Helix2dOptions): 
     }
   }
 
-  // Glows: Now at the start, the Big Bang at the bottom tip; "You are here" just below Now.
+  // Glows: Now at the start, the Big Bang at the bottom tip; "You are here" just left of Now, where
+  // nothing is drawn (the ribbon starts at Now).
   const scale = (p: Projected): number => height / 2 / Math.tan((FOV * Math.PI) / 360) / p.depth;
   const glow = (at: Point3, size: number, id: string): void => {
     const p = project(at);
@@ -223,12 +228,13 @@ export function renderHelix2d(container: HTMLElement, options: Helix2dOptions): 
   const now = path.pointAt(0);
   glow(now, 0.34, 'glow-now');
   glow(path.pointAt(1), 0.75, 'glow-bang');
-  const you = project({ x: now.x - 0.04, y: now.y - 0.1, z: now.z + 0.06 });
+  const you = project({ x: now.x - YOU_GAP, y: now.y, z: now.z });
   svg
     .append('text')
     .attr('class', 'you-label')
     .attr('x', px(you.x))
     .attr('y', px(you.y))
+    .attr('dy', '0.35em')
     .attr('aria-hidden', 'true')
     .text(t('spiral.you'));
 
