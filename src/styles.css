@@ -87,6 +87,136 @@ a {
   font-size: 0.85rem;
 }
 
+/* 3D view (three.js) */
+
+.stage-3d {
+  opacity: 0;
+  transition: opacity 0.8s ease-out;
+}
+
+.stage-3d.shown {
+  opacity: 1;
+}
+
+.vortex-canvas {
+  display: block;
+}
+
+.labels3d {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+}
+
+.sticker {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.sticker-button {
+  padding: 0;
+  border: none;
+  border-radius: 50%;
+  background: none;
+  cursor: pointer;
+  pointer-events: auto;
+  animation: pop 0.55s cubic-bezier(0.34, 1.56, 0.64, 1) both;
+}
+
+.sticker-button svg {
+  display: block;
+}
+
+.sticker-button:focus-visible {
+  outline: 3px solid #ffffff;
+  outline-offset: -6px;
+}
+
+.sticker-label,
+.you-label3d {
+  font: 600 14px var(--font-body);
+  white-space: nowrap;
+  pointer-events: none;
+  text-shadow:
+    0 0 4px rgb(6 10 20),
+    0 0 8px rgb(6 10 20);
+}
+
+/* Under its badge. (three.js positions the floating elements themselves absolutely.) */
+.sticker-label {
+  position: absolute;
+  top: 100%;
+  margin-top: -8px;
+}
+
+.you-label3d {
+  color: var(--color-now);
+  font-size: 15px;
+}
+
+.pill3d {
+  padding: 5px 14px;
+  border: 1.5px solid rgb(255 255 255 / 60%);
+  border-radius: 15px;
+  background: #0b1426;
+  font: 700 14px var(--font-body);
+  white-space: nowrap;
+}
+
+.pill3d-zoom {
+  border: none;
+  background: var(--color-now);
+  color: #1a1300;
+}
+
+/* View buttons */
+
+.view-bar {
+  position: absolute;
+  left: 8px;
+  bottom: 8px;
+  z-index: 2;
+  display: flex;
+  gap: 6px;
+}
+
+.view-button {
+  display: inline-flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 1px;
+  width: 56px;
+  height: 56px;
+  border: 1.5px solid rgb(255 255 255 / 35%);
+  border-radius: 14px;
+  background: rgb(11 20 38 / 85%);
+  color: var(--color-text);
+  font: 600 12px var(--font-body);
+  cursor: pointer;
+}
+
+.view-button svg {
+  width: 24px;
+  height: 24px;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 1.8;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.view-button:focus-visible {
+  outline: 3px solid #ffffff;
+  outline-offset: 2px;
+}
+
+.view-bar[hidden],
+.view-button[hidden] {
+  display: none;
+}
+
 /* Scene */
 
 .event {
@@ -241,6 +371,12 @@ a {
 }
 
 @media (prefers-reduced-motion: reduce) {
+  .stage-3d,
+  .sticker-button {
+    transition: none;
+    animation: none;
+  }
+
   .scene .draw,
   .scene .pop,
   .scene .fade-in,
