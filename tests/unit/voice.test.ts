@@ -30,6 +30,16 @@ describe('pickVoice', () => {
     expect(pickVoice(mac, 'hu')?.name).toBe('Tünde');
   });
 
+  it("skips Chrome's Natural voices, which never start speaking", () => {
+    const chrome = [
+      ...mac,
+      { name: 'Google UK English 1 (Natural)', lang: 'en-GB', localService: true, default: false },
+      { name: 'Google français 1 (Natural)', lang: 'fr-FR', localService: true, default: false },
+    ];
+    expect(pickVoice(chrome, 'en')?.name).toBe('Samantha');
+    expect(pickVoice(chrome, 'fr')?.name).toBe('Thomas');
+  });
+
   it('prefers natural-sounding voices', () => {
     const edge = [
       ...mac,
@@ -59,6 +69,13 @@ describe('sentences', () => {
       'The Big Bang.',
       'about 13.8 billion years ago.',
       'Our universe begins!',
+    ]);
+  });
+
+  it('keeps abbreviations like "T. rex" in one sentence', () => {
+    expect(sentences('People, T. rex, First dinosaurs. All fit!')).toEqual([
+      'People, T. rex, First dinosaurs.',
+      'All fit!',
     ]);
   });
 });
