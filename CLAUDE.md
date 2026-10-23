@@ -33,7 +33,10 @@ Proposed rungs (about 10). Exact values come from the cited sources at build tim
 | 10 | Earth and Moon form / Sun and planets form | ~4.54 / 4.567 Ga | ICS chart for the Hadean base; cite for the solar system |
 | 11 | The Big Bang | 13.8 Ga | Cite Planck 2018 cosmological parameters |
 
-**The spiral:** a D3 SVG spiral showing the ICS eons, eras and periods with **official ICS colours**. Event icons sit on the spiral. Support pinch/scroll zoom, pan, and tap an icon to hear its card.
+**The spiral is 3D and interactive** (Benoît's requirement, 2026-10-23; every milestone builds on it): a **vortex** you can spin, tilt, pinch-zoom and pan, showing the ICS eons, eras and periods with **official ICS colours**. Event icons sit on the spiral; tapping one flies the camera to it and opens its card (later read aloud).
+- **Shape:** Now at the top centre; the past spirals outward **and downward**, with **depth proportional to time** (older = deeper, like rock layers). Seen from straight above it is the honest flat map (equal time = equal path length); seen from the side it is a vertical timeline. The Big Bang is at the bottom rim.
+- **Views:** Home (3D), Top (honest flat map), Side (timeline), and a **2D** SVG view that is also the fallback when WebGL is missing. Under reduced motion the camera jumps instead of flying and nothing spins on its own.
+- **Zoom lens:** a second, re-scaled vortex for the Phanerozoic floats next to the main one, joined by a light beam, with an honest "Zoom ×N" label. Deeper zooms (down to a child's own age) are the Zoom Ladder (M3).
 - Time→spiral mapping must be a pluggable function: linear (honest) and log-like (readable). The ladder can switch mapping per rung. The kid view must never show a distorted scale without a visual cue (e.g. a "zoom lens" frame).
 
 **Guided tour:** 10–12 stops following the ladder (Next / Back / Repeat-voice buttons) and a short celebration at the end. Then it unlocks **Explore mode** (free zoom, tap events, "surprise me" button).
@@ -62,7 +65,8 @@ Proposed rungs (about 10). Exact values come from the cited sources at build tim
 7. **Illustrations:** original SVG icons drawn in code, or openly licensed silhouettes (e.g. PhyloPic for organisms — check each image's licence: CC0 / CC BY only, record the attribution). **No copyrighted characters or franchise art.**
 
 ## Tech stack and architecture
-- **Vite + TypeScript (strict) + D3 v7**, with no UI framework. A small hand-rolled state/router is enough.
+- **Vite + TypeScript (strict) + three.js + D3 v7**, with no UI framework. three.js (WebGL) draws the 3D vortex; D3 draws the 2D SVG view and the event badges. A small hand-rolled state/router is enough.
+- The 2D view renders first; the three.js code is loaded afterwards (`import()`), so the first paint stays fast and Lighthouse stays ≥ 90.
 - Package manager: npm. Node LTS pinned via `.nvmrc`.
 - TypeScript is pinned to **6.0.x**, not 7.x: typescript-eslint 8.x supports only `typescript <6.1.0` (checked 2026-10-22). Revisit when typescript-eslint supports TypeScript 7.
 - Visual-regression screenshots start in M2. Baselines must be made in the same Linux setup as CI (Playwright's Docker image), because screenshots differ between macOS and Linux.
@@ -71,7 +75,8 @@ Proposed rungs (about 10). Exact values come from the cited sources at build tim
   src/
     data/        ics-units.json, events.json, ladder.json (+ schema.ts with zod validation)
     geometry/    spiral.ts (time→angle/radius mappings, pure functions)
-    render/      spiral-view.ts, dot-shrink.ts, icons/
+    render/      2D SVG scene, layout, illustrations (shared with 3D)
+    render3d/    three.js vortex: scene, ribbon, stickers, camera, view buttons
     tour/        tour.ts, steps.ts
     i18n/        en.json fr.json de.json hu.json, i18n.ts
     voice/       speech.ts
@@ -91,7 +96,7 @@ Proposed rungs (about 10). Exact values come from the cited sources at build tim
   - Every event has a source.
   - Every i18n key exists in all 4 locales.
   - The geometry functions are monotonic and invertible.
-- **Playwright** (Chromium + WebKit, tablet and phone viewports): the full guided tour completes, the language switch works, and screenshot visual regression runs on key screens.
+- **Playwright** (Chromium + WebKit, tablet and phone viewports): the 3D view loads and responds to spin, zoom and fly-to (with a 2D fallback without WebGL), the full guided tour completes, the language switch works, and screenshot visual regression runs on key screens (3D Home/Top/Side and 2D).
 - **Lighthouse CI:** accessibility ≥ 95, performance ≥ 90 on mobile.
 
 ## Delivery pipeline (three stages)
@@ -108,8 +113,8 @@ Proposed rungs (about 10). Exact values come from the cited sources at build tim
 ## Milestones (each = small PRs, each shippable)
 - **M0 Scaffold:** repo, Vite+TS+D3, lint/test tooling, CI, Pages deploy of a "hello spiral". ✅ when the Pages URL works.
 - **M1 Data:** ICS units + colours + events with sources, zod schemas, integrity tests. ✅ when the tests are green and the data is reviewed by me.
-- **M2 Spiral:** static spiral rendering of eons/eras/periods with ICS colours, zoom/pan, tap cards. ✅ when visual snapshots are approved.
-- **M3 Ladder + Shrinking Dot + Guided tour (EN):** ✅ when a 7-year-old test user completes the tour. I'll do the kid test.
+- **M2 3D spiral:** the 3D vortex (three.js) with ICS colours, spin/zoom/pan, fly-to, tap cards, Home/Top/Side views and the 2D fallback. ✅ when visual snapshots are approved.
+- **M3 Ladder + Shrinking Dot + Guided tour (EN),** in 3D, reusing the fly-to camera: ✅ when a 7-year-old test user completes the tour. I'll do the kid test.
 - **M4 Voice + i18n (FR/DE/HU):** ✅ when all locales are complete and TTS degrades gracefully.
 - **M5 Vercel + custom domain:** ✅ when production is live on the subdomain over HTTPS.
 - **M6 Polish:** grown-up mode, credits page, accessibility, reduced motion, optional offline PWA.
@@ -133,20 +138,25 @@ Proposed rungs (about 10). Exact values come from the cited sources at build tim
   - `chart.ttl` also carries the **official unit names in en, fr, de and hu**. Use them; never translate geological unit names ourselves.
   - Approximate ages ("~" on the PDF) are encoded in `chart.ttl` as `skos:note "uncertain"` on a boundary. ± values are `schema:marginOfError`.
   - The ICS Hadean base (**4567 Ma**) is the age of the solar system's first solids, not Earth's formation. "Earth forms" (~4.54 Ga) and "solar system forms" each need their own citation in `events.json`.
-  - **Spiral orientation:** a flat 2D spiral seen from above, with **Now at the centre** and the past spiralling outward. This is the opposite of USGS GIP 58 (Now on the outer edge). Zooming out keeps Now fixed, so the Shrinking Dot sits at the centre.
+  - **Spiral orientation** (the "flat 2D" part is superseded by the 3D vortex, 2026-10-23): a flat 2D spiral seen from above, with **Now at the centre** and the past spiralling outward. This is the opposite of USGS GIP 58 (Now on the outer edge). Zooming out keeps Now fixed, so the Shrinking Dot sits at the centre.
   - **Time mapping:** honest linear scale by default. The readable log-like scale appears only inside a visible "zoom lens" frame. (GIP 58 silently stretches the Cenozoic and crushes the Precambrian.)
   - Keep from GIP 58: one continuous path a finger can trace, life pictures as the hook, few rounded numbers, a cosmic swirl at the start of time. Change: official ICS colours and names, a few big tappable icons, human-scale rungs, and a Big Bang prologue.
-- **2026-10-22/23 (M1 data, built overnight; awaiting review):**
+- **2026-10-22/23 (M1 data; reviewed and merged as PR #3):**
   - `data/ics/chart.ttl` is vendored unmodified (pinned tag, commit and SHA-256 in `data/ics/SOURCE.md`). `npm run data:ics` regenerates `src/data/ics-units.json`; a test fails if the JSON differs from a fresh extraction.
   - **No new dependencies:** a small Turtle parser in `scripts/ics/turtle.ts` (rejects unsupported syntax) instead of `n3`, and hand-written runtime validation in `src/data/validate.ts` instead of `zod`. Either can be swapped in later if wanted.
   - Scripts are TypeScript run directly by Node 26 (type stripping), so `tsconfig.json` has `allowImportingTsExtensions` and `erasableSyntaxOnly`.
   - Kept ranks: super-eon, eon, era, period, sub-period, epoch (ages/stages left out). 21 epochs have no names in the chart data (e.g. "Lower Jurassic"); their `labels` are `null` rather than invented.
   - Every cited event age records `detail`: where in the source the number appears. ICS-based events reference a unit boundary instead of copying the number.
   - Pyramids rung: `TODO(source)`, left out until a source stating the Great Pyramid's date is checked.
-- **2026-10-23 ("whoa" spiral, built overnight on request; awaiting review):**
+- **2026-10-23 ("whoa" 2D spiral; merged as PR #4, now the base and the 2D fallback):**
   - One honest spiral from Now (centre) to the Big Bang (outer end), **even speed**: equal time = equal path length (`evenSpiralPoint`). A starry violet band (not an ICS colour) for the time before Earth, then the four eons in ICS colours.
   - A **magnifier + light beam + zoom lens** shows the Phanerozoic (538.8 Ma → now) by ICS period. The "Zoom ×N" badge is computed from the real path lengths, so the distortion cue is honest.
   - Turns are tuned so events spread around the clock (main 3.75 turns, lens 2.25). Badge positions are exact; only "people" (too close to now) sits beside its spot, with a pointer line to it.
   - Tapping a picture opens a `<dialog>` card: kid-level fact, rounded age (never finer than the source), and a source link.
   - Illustrations: PhyloPic CC0/CC BY silhouettes for animals, original code drawings for the rest. A small in-app **Credits** link meets the CC BY attribution for the ICS data and the trilobite until the M6 credits page.
   - Not yet: pinch/scroll zoom and pan (M2), the Ladder + Shrinking Dot and tour (M3), voice and other languages (M4).
+- **2026-10-23 (3D, Benoît's decision after seeing #4): the spiral must be 3D and interactive, from now on.**
+  - Shape: **vortex cone**: even-speed 2D spiral in the horizontal plane + **depth ∝ time**. Top view = honest flat map; side view = timeline.
+  - Library: **three.js** (MIT), loaded lazily after the 2D view. Event stickers stay HTML buttons (three.js `CSS2DRenderer`) for keyboard, screen readers and 48 px targets.
+  - Interaction: **free 3D + fly-to** (one finger spins, two fingers pinch/pan; tapping a sticker flies the camera there; Home/Top/Side/2D buttons). Auto-spin only when idle, never under reduced motion.
+  - The 2D SVG scene from PR #4 is kept as the first paint and the fallback, and shares data, illustrations, cards and wording with 3D.
