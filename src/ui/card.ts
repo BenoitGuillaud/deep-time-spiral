@@ -5,6 +5,7 @@ import { eventLabel, type EventMarker } from '../render/events';
 import type { Flag } from '../render/flags';
 import { formatAgo, formatSpan } from '../render/format';
 import { drawBadge, type IllustrationKind } from '../render/illustrations/icons';
+import type { Voice } from '../voice/speech';
 
 /** What a card shows: a picture, a title, how long ago, a short text, and where the number comes from. */
 export interface CardContent {
@@ -64,10 +65,30 @@ function element<K extends keyof HTMLElementTagNameMap>(
   return el;
 }
 
-/** Creates the card dialog and returns a function that opens it with some content. */
-export function createCard(parent: HTMLElement): (content: CardContent) => void {
+/** What the voice reads for a card (or a journey caption): title, age, then the text. */
+export function spokenText(content: {
+  title?: string;
+  age?: string;
+  text: string;
+  extra?: string;
+}): string {
+  // A full stop after each part, so the voice pauses between them.
+  return [content.title, content.age, content.text, content.extra]
+    .filter((part): part is string => Boolean(part))
+    .map((part) => (/[.!?…]$/.test(part) ? part : `${part}.`))
+    .join(' ');
+}
+
+/**
+ * Creates the card dialog and returns a function that opens it with some content. The card reads
+ * itself aloud when it opens, and again with its speaker button.
+ */
+export function createCard(parent: HTMLElement, voice: Voice): (content: CardContent) => void {
   const dialog = element('dialog', 'card', parent);
   dialog.setAttribute('aria-labelledby', 'card-title');
+  dialog.addEventListener('close', () => {
+    voice.cancel();
+  });
 
   const close = element('button', 'card-close', dialog);
   close.type = 'button';
@@ -98,6 +119,24 @@ export function createCard(parent: HTMLElement): (content: CardContent) => void 
   source.rel = 'noopener';
   source.textContent = t('card.source');
 
+  const listen = element('button', 'card-listen', dialog);
+  listen.type = 'button';
+  listen.innerHTML =
+    '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 9v6h4l5 4V5L8 9zM16 8.5a5 5 0 0 1 0 7M18.5 6a8.5 8.5 0 0 1 0 12"/></svg>';
+  const listenText = document.createElement('span');
+  listenText.textContent = t('card.listen');
+  listen.append(listenText);
+  let spoken = '';
+  listen.addEventListener('click', () => {
+    void voice.say(spoken);
+  });
+  const updateListen = (): void => {
+    listen.disabled = !voice.available() || voice.muted();
+    listen.title = voice.available() ? '' : t('voice.missing');
+  };
+  voice.onChange(updateListen);
+  updateListen();
+
   return (content) => {
     art.selectAll('*').remove();
     drawBadge(art.append('g'), content.art, 104, content.ring);
@@ -112,5 +151,7 @@ export function createCard(parent: HTMLElement): (content: CardContent) => void 
       source.title = content.source.citation;
     }
     dialog.showModal();
+    spoken = spokenText(content);
+    void voice.say(spoken);
   };
 }
