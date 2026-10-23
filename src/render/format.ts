@@ -26,9 +26,12 @@ export function formatAgo(age: Pick<ResolvedAge, 'years' | 'qualifier'>): string
   return text;
 }
 
-/** A span of time such as "539 million years", for the zoom lens caption. */
-export function formatSpanMillions(years: number): string {
-  return t('age.span.million', {
-    n: new Intl.NumberFormat(locale, { maximumFractionDigits: 0 }).format(years / 1e6),
-  });
+/** A span of time such as "539 million years" or "13.8 billion years", rounded like `formatAgo`. */
+export function formatSpan(years: number): string {
+  const number = (n: number, digits = 0): string =>
+    new Intl.NumberFormat(locale, { maximumFractionDigits: digits }).format(n);
+  if (years >= 1e9) return t('age.span.billion', { n: number(years / 1e9, 1) });
+  if (years >= 1e6) return t('age.span.million', { n: number(Math.round(years / 1e6)) });
+  if (years >= 1e5) return t('age.span.years', { n: number(Math.round(years / 1000) * 1000) });
+  return t('age.span.years', { n: number(Math.round(years / 100) * 100) });
 }

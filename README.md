@@ -18,6 +18,14 @@ Requires Node 26 (see [`.nvmrc`](.nvmrc)).
 npm install
 npm run dev            # live-reload dev server at http://localhost:5173
 npm run dev -- --host  # also reachable from a tablet on the same Wi-Fi (use the "Network" URL it prints)
+```
+
+The page draws the corkscrew as a still 2D picture first, then hands over to the same corkscrew in 3D (three.js) if the
+browser has WebGL. Spin with one finger, pinch to zoom, slide with two fingers (or right-drag, Shift+drag, the arrow keys,
+or the **Move** button), and tap a picture to fly to it. Without a graphics chip (WebGL drawn in software, about
+2 frames per second) the page stays in 2D. Add `?view=2d` to the address to stay in 2D, or `?view=3d` to force 3D.
+
+```bash
 npm run build && npm run preview
 ```
 

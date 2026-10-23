@@ -91,9 +91,39 @@ Shipped to the browser:
 
 | Package | Licence | Notes |
 |---|---|---|
+| [three.js](https://threejs.org) 0.186 | MIT | The 3D vortex, loaded after the 2D view; includes the OrbitControls and CSS2DRenderer add-ons. |
 | [D3](https://d3js.org) 7.9 | ISC; `d3-ease` is BSD-3-Clause | The bundle includes d3-selection and, through it, d3-transition, d3-interpolate, d3-color, d3-timer, d3-dispatch and d3-ease. |
 
 Licence notices for the code shipped in the bundle (copied from the packages):
+
+<details>
+<summary>three.js (MIT)</summary>
+
+```
+The MIT License
+
+Copyright © 2010-2026 three.js authors
+
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in
+all copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+THE SOFTWARE.
+```
+
+</details>
 
 <details>
 <summary>D3 (ISC)</summary>

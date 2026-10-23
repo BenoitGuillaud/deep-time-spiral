@@ -18,6 +18,11 @@
   box-sizing: border-box;
 }
 
+/* `hidden` always wins over a component's own `display`. */
+[hidden] {
+  display: none !important;
+}
+
 html,
 body {
   margin: 0;
@@ -87,6 +92,123 @@ a {
   font-size: 0.85rem;
 }
 
+/* 3D view (three.js) */
+
+.stage-3d {
+  opacity: 0;
+  transition: opacity 0.8s ease-out;
+}
+
+.stage-3d.shown {
+  opacity: 1;
+}
+
+.vortex-canvas {
+  display: block;
+}
+
+.labels3d {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+}
+
+.sticker {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.sticker-button {
+  padding: 0;
+  border: none;
+  border-radius: 50%;
+  background: none;
+  cursor: pointer;
+  pointer-events: auto;
+  animation: pop 0.55s cubic-bezier(0.34, 1.56, 0.64, 1) both;
+}
+
+.sticker-button svg {
+  display: block;
+}
+
+.sticker-button:focus-visible {
+  outline: 3px solid #ffffff;
+  outline-offset: -6px;
+}
+
+.sticker-label,
+.you-label3d {
+  font: 600 14px var(--font-body);
+  white-space: nowrap;
+  pointer-events: none;
+  text-shadow:
+    0 0 4px rgb(6 10 20),
+    0 0 8px rgb(6 10 20);
+}
+
+/* Under its badge. (three.js positions the floating elements themselves absolutely.) */
+.sticker-label {
+  position: absolute;
+  top: 100%;
+  margin-top: -8px;
+}
+
+.you-label3d {
+  color: var(--color-now);
+  font-size: 15px;
+  /* three.js centres it on its point; shift it so the text ends there instead. */
+  translate: -50% 0;
+}
+
+/* View buttons */
+
+.view-bar {
+  position: absolute;
+  left: 8px;
+  bottom: 8px;
+  z-index: 2;
+  display: flex;
+  gap: 6px;
+}
+
+.view-button {
+  display: inline-flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 1px;
+  width: 56px;
+  height: 56px;
+  border: 1.5px solid rgb(255 255 255 / 35%);
+  border-radius: 14px;
+  background: rgb(11 20 38 / 85%);
+  color: var(--color-text);
+  font: 600 12px var(--font-body);
+  cursor: pointer;
+}
+
+.view-button svg {
+  width: 24px;
+  height: 24px;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 1.8;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.view-button:focus-visible {
+  outline: 3px solid #ffffff;
+  outline-offset: 2px;
+}
+
+.view-button[aria-pressed='true'] {
+  border-color: var(--color-now);
+  background: rgb(255 209 102 / 22%);
+}
+
 /* Scene */
 
 .event {
@@ -124,38 +246,7 @@ a {
 .you-label {
   fill: var(--color-now);
   font-size: 15px;
-}
-
-.magnifier {
-  fill: rgb(255 255 255 / 6%);
-  stroke: rgb(255 255 255 / 75%);
-  stroke-width: 2.5;
-}
-
-.lens-rim {
-  stroke: rgb(255 255 255 / 75%);
-  stroke-width: 4;
-}
-
-.pill rect {
-  fill: #0b1426;
-  stroke: rgb(255 255 255 / 60%);
-  stroke-width: 1.5;
-}
-
-.pill text {
-  font: 700 14px var(--font-body);
-  fill: var(--color-text);
-  text-anchor: middle;
-}
-
-.pill-zoom rect {
-  fill: var(--color-now);
-  stroke: none;
-}
-
-.pill-zoom text {
-  fill: #1a1300;
+  text-anchor: end;
 }
 
 .pointer {
@@ -163,14 +254,10 @@ a {
   stroke-dasharray: 4 4;
 }
 
-/* Animations: the ribbon draws itself from Now outward, pictures pop in as it reaches them. */
+/* Animations: the ribbon draws itself from Now down to the Big Bang, pictures pop in as it reaches them. */
 
-.scene .draw {
-  /* With pathLength="1", a dash of 1 covers the whole path; animating the offset reveals it. */
-  stroke-dasharray: 1;
-  animation-name: draw-path;
-  animation-timing-function: linear;
-  animation-fill-mode: both;
+.scene .seg {
+  animation: fade-in 0.35s ease-out both;
 }
 
 .scene .pop {
@@ -193,20 +280,10 @@ a {
   animation: pulse 2.4s ease-in-out infinite;
 }
 
-.scene.static .draw,
+.scene.static .seg,
 .scene.static .pop,
 .scene.static .fade-in {
   animation: none;
-}
-
-@keyframes draw-path {
-  from {
-    stroke-dashoffset: 1;
-  }
-
-  to {
-    stroke-dashoffset: 0;
-  }
 }
 
 @keyframes pop {
@@ -241,7 +318,13 @@ a {
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .scene .draw,
+  .stage-3d,
+  .sticker-button {
+    transition: none;
+    animation: none;
+  }
+
+  .scene .seg,
   .scene .pop,
   .scene .fade-in,
   .twinkle,
