@@ -18,6 +18,12 @@ Requires Node 26 (see [`.nvmrc`](.nvmrc)).
 npm install
 npm run dev            # live-reload dev server at http://localhost:5173
 npm run dev -- --host  # also reachable from a tablet on the same Wi-Fi (use the "Network" URL it prints)
+```
+
+The page draws the flat 2D spiral first, then lifts it into the 3D vortex (three.js) if the browser has WebGL.
+Spin with one finger, pinch to zoom, tap a picture to fly to it. Add `?view=2d` to the address to stay in 2D.
+
+```bash
 npm run build && npm run preview
 ```
 
