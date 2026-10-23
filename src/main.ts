@@ -48,6 +48,7 @@ const openCard = createCard(document.body);
 let view3d: HelixView | null = null;
 const bar = createViewBar({
   onView: (view) => view3d?.setView(view),
+  onMove: (on) => view3d?.setMoveMode(on),
   onToggle: () => {
     if (app.dataset.view === '3d') show2d();
     else void show3d();

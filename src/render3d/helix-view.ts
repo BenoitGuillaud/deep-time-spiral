@@ -8,6 +8,8 @@ import {
   DirectionalLight,
   Group,
   HemisphereLight,
+  MOUSE,
+  TOUCH,
   Line,
   LineBasicMaterial,
   Mesh,
@@ -31,7 +33,7 @@ import { CSS2DObject, CSS2DRenderer } from 'three/addons/renderers/CSS2DRenderer
 import { event as findEvent, resolveAge } from '../data';
 import { CORKSCREW, createHelixPath, type HelixPath, type Point3 } from '../geometry/helix';
 import { t } from '../i18n/i18n';
-import { COSMOS_COLOR } from '../render/events';
+import { COSMOS_COLOR, YOU_GAP } from '../render/events';
 import { outlineOf, placeFlags } from '../render/flag-placement';
 import type { Flag } from '../render/flags';
 import { drawBadge } from '../render/illustrations/icons';
@@ -60,6 +62,8 @@ export interface HelixViewOptions {
 
 export interface HelixView {
   setView(view: ViewName): void;
+  /** Move mode: one finger or a plain drag slides the model instead of turning it. */
+  setMoveMode(on: boolean): void;
   resize(): void;
   dispose(): void;
 }
@@ -255,8 +259,9 @@ async function buildContent(
   glow(glowTexture('rgba(255,230,160,1)', 'rgba(255,209,102,0.45)'), now, 0.34);
   glow(glowTexture('rgba(255,250,230,1)', 'rgba(255,170,80,0.5)'), path.pointAt(1), 0.75);
   const you = floatingText('you-label3d', t('spiral.you'));
-  // Just below the Now glow: the flags stand above it, and below are only the unlabelled coils.
-  you.position.set(now.x - 0.04, now.y - 0.1, now.z + 0.06);
+  // Just left of the Now glow, where nothing is drawn (the ribbon starts at Now); the CSS shifts
+  // the text so it ends there.
+  you.position.set(now.x - YOU_GAP, now.y, now.z);
   group.add(you);
 
   // Event flags: a pole on the exact spot, the picture on top (placement shared with 2D).
@@ -366,6 +371,8 @@ export async function mountHelixView(
   controls.minDistance = 0.25;
   controls.maxPolarAngle = Math.PI * 0.75;
   controls.autoRotateSpeed = 0.35;
+  controls.keyPanSpeed = 20;
+  controls.listenToKeyEvents(window);
 
   const path = createHelixPath(CORKSCREW);
   // M2 shows the whole story, Now → Big Bang. (The Zoom Ladder, M3, will change this span.)
@@ -487,6 +494,8 @@ export async function mountHelixView(
     container.dataset.camera = 'free';
   });
   controls.addEventListener('end', () => {
+    const { x, y, z } = controls.target;
+    container.dataset.target = [x, y, z].map((n) => n.toFixed(2)).join(',');
     if (reducedMotion) return;
     window.clearTimeout(idleTimer);
     idleTimer = window.setTimeout(() => {
@@ -504,6 +513,12 @@ export async function mountHelixView(
   return {
     setView(view) {
       flyTo(presetPose(view, outline, cameraFrame()), view, FLIGHT_MS);
+    },
+    setMoveMode(on) {
+      controls.mouseButtons.LEFT = on ? MOUSE.PAN : MOUSE.ROTATE;
+      controls.mouseButtons.RIGHT = on ? MOUSE.ROTATE : MOUSE.PAN;
+      controls.touches.ONE = on ? TOUCH.PAN : TOUCH.ROTATE;
+      container.dataset.move = String(on);
     },
     resize() {
       ({ width, height, aspect } = size());
