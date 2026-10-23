@@ -76,7 +76,11 @@ export function helixRibbon(
     for (let k = 0; k < FACES; k++) {
       const a = (i * FACES + k) * 2;
       const b = ((i + 1) * FACES + k) * 2;
-      indices.set([a, b, a + 1, a + 1, b, b + 1], i * indicesPerStep + k * 6);
+      // Counter-clockwise seen from where each face's normal points (top and outer side are
+      // listed outer-first), so the renderer never culls a face that should show.
+      const triangles =
+        k === 0 || k === 2 ? [a, a + 1, b, a + 1, b + 1, b] : [a, b, a + 1, a + 1, b, b + 1];
+      indices.set(triangles, i * indicesPerStep + k * 6);
     }
   }
   return { positions, normals, uvs, indices, indicesPerStep };

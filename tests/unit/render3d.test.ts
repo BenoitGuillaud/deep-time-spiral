@@ -1,5 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import { CORKSCREW, createHelixPath } from '../../src/geometry/helix';
+import { outlineOf, placeFlags } from '../../src/render/flag-placement';
 import {
   easeInOutCubic,
   eventPose,
@@ -9,7 +10,11 @@ import {
   orbit,
   presetPose,
   projector,
+  FOV,
+  stickerSize,
+  viewFrame,
 } from '../../src/render3d/camera';
+import { helixRibbon } from '../../src/render3d/helix-ribbon';
 
 const distance = (a: { x: number; y: number; z: number }, b: { x: number; y: number; z: number }) =>
   Math.hypot(a.x - b.x, a.y - b.y, a.z - b.z);
@@ -138,5 +143,48 @@ describe('projector', () => {
     expect(level({ x: 0, y: 0, z: 4 }).depth).toBeCloseTo(1, 9);
     // 1 unit ahead and tan(20°) up lands exactly on the top edge of a 40° field of view.
     expect(level({ x: 0, y: Math.tan((20 * Math.PI) / 180), z: 4 }).y).toBeCloseTo(0, 6);
+  });
+});
+
+describe('helixRibbon', () => {
+  it('winds every triangle to face the same way as its normal, so none is culled', () => {
+    const { positions, normals, indices } = helixRibbon(path, 0, 0.3);
+    const at = (array: Float32Array, i: number) =>
+      [array[i * 3], array[i * 3 + 1], array[i * 3 + 2]].map(Number);
+    for (let t = 0; t < indices.length; t += 3) {
+      const [p, q, r] = [indices[t], indices[t + 1], indices[t + 2]].map((i) =>
+        at(positions, Number(i)),
+      );
+      if (!p || !q || !r) throw new Error('Missing vertex');
+      const u = q.map((v, k) => v - (p[k] ?? 0));
+      const v = r.map((w, k) => w - (p[k] ?? 0));
+      const [ux = 0, uy = 0, uz = 0] = u;
+      const [vx = 0, vy = 0, vz = 0] = v;
+      const face = [uy * vz - uz * vy, uz * vx - ux * vz, ux * vy - uy * vx];
+      const normal = at(normals, Number(indices[t]));
+      const dot = face.reduce((sum, c, k) => sum + c * (normal[k] ?? 0), 0);
+      expect(dot, `triangle ${String(t / 3)}`).toBeGreaterThan(0);
+    }
+  });
+});
+
+describe('flags in the Home view', () => {
+  it.each([
+    [390, 844],
+    [820, 1180],
+    [1180, 820],
+  ])('never put one picture or its label on another at %d × %d', (width, height) => {
+    const placed = placeFlags(path, 13.787e9);
+    const pose = presetPose('home', outlineOf(path, placed), viewFrame(width, height));
+    const project = projector(pose, FOV, width, height);
+    const size = stickerSize(width, height);
+    const tops = placed.map((p) => ({ id: p.look.id, ...project(p.top) }));
+    for (const [i, a] of tops.entries()) {
+      for (const b of tops.slice(i + 1)) {
+        // Side by side, or one above the other with room for the label (about 20 px) in between.
+        const apart = Math.abs(a.x - b.x) >= size || Math.abs(a.y - b.y) >= size + 20;
+        expect(apart, `${a.id} and ${b.id}`).toBe(true);
+      }
+    }
   });
 });
