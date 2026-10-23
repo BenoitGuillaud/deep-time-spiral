@@ -35,7 +35,7 @@ Proposed rungs (about 10). Exact values come from the cited sources at build tim
 
 **The spiral is 3D and interactive** (Benoît's requirement, 2026-10-23; every milestone builds on it): a **vortex** you can spin, tilt, pinch-zoom and pan, showing the ICS eons, eras and periods with **official ICS colours**. Event icons sit on the spiral; tapping one flies the camera to it and opens its card (later read aloud).
 - **Shape:** Now at the top centre; the past spirals outward **and downward**, with **depth proportional to time** (older = deeper, like rock layers). Seen from straight above it is the honest flat map (equal time = equal path length); seen from the side it is a vertical timeline. The Big Bang is at the bottom rim.
-- **Views:** Home (3D), Top (honest flat map), Side (timeline), and a **2D** SVG view that is also the fallback when WebGL is missing. Under reduced motion the camera jumps instead of flying and nothing spins on its own.
+- **Views:** Home (3D), Top (honest flat map), Side (timeline), and a **2D** SVG view that is also the fallback when WebGL is missing or drawn in software (no graphics chip: about 2 frames per second). `?view=2d` / `?view=3d` force either. Under reduced motion the camera jumps instead of flying and nothing spins on its own.
 - **Zoom lens:** a second, re-scaled vortex for the Phanerozoic floats next to the main one, joined by a light beam, with an honest "Zoom ×N" label. Deeper zooms (down to a child's own age) are the Zoom Ladder (M3).
 - Time→spiral mapping must be a pluggable function: linear (honest) and log-like (readable). The ladder can switch mapping per rung. The kid view must never show a distorted scale without a visual cue (e.g. a "zoom lens" frame).
 
@@ -66,7 +66,7 @@ Proposed rungs (about 10). Exact values come from the cited sources at build tim
 
 ## Tech stack and architecture
 - **Vite + TypeScript (strict) + three.js + D3 v7**, with no UI framework. three.js (WebGL) draws the 3D vortex; D3 draws the 2D SVG view and the event badges. A small hand-rolled state/router is enough.
-- The 2D view renders first; the three.js code is loaded afterwards (`import()`), so the first paint stays fast and Lighthouse stays ≥ 90.
+- The 2D view renders first and draws itself in; only then (about 3 s, in idle time) is WebGL checked and the three.js code loaded (`import()`), so the first paint stays fast and Lighthouse stays ≥ 90. CI machines have no graphics chip, so Lighthouse in CI measures the 2D experience; the 3D e2e tests force 3D with `?view=3d`.
 - Package manager: npm. Node LTS pinned via `.nvmrc`.
 - TypeScript is pinned to **6.0.x**, not 7.x: typescript-eslint 8.x supports only `typescript <6.1.0` (checked 2026-10-22). Revisit when typescript-eslint supports TypeScript 7.
 - Visual-regression screenshots start in M2. Baselines must be made in the same Linux setup as CI (Playwright's Docker image), because screenshots differ between macOS and Linux.
