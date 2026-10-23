@@ -1,37 +1,41 @@
 import type { ResolvedAge } from '../data';
-import { locale, t } from '../i18n/i18n';
+import { locale, t, type MessageKey } from '../i18n/i18n';
 
 /**
  * Kid-friendly "how long ago", rounded no further than the source allows: billions to one decimal,
- * millions to whole millions, then thousands or hundreds of years.
+ * millions to whole millions, then thousands or hundreds of years. Built in steps (amount, then
+ * "about" / "at least", then "ago") because languages put them in different orders.
  */
 export function formatAgo(age: Pick<ResolvedAge, 'years' | 'qualifier'>): string {
-  const { years } = age;
-  const number = (n: number, digits = 0): string =>
-    new Intl.NumberFormat(locale, { maximumFractionDigits: digits }).format(n);
-
-  let text: string;
-  if (years >= 1e9) {
-    text = t('age.billion', { n: number(years / 1e9, 1) });
-  } else if (years >= 1e6) {
-    text = t('age.million', { n: number(Math.round(years / 1e6)) });
-  } else if (years >= 1e5) {
-    text = t('age.years', { n: number(Math.round(years / 1000) * 1000) });
-  } else {
-    text = t('age.years', { n: number(Math.round(years / 100) * 100) });
-  }
-
-  if (age.qualifier === 'about') return t('age.about', { age: text });
-  if (age.qualifier === 'at-least') return t('age.atLeast', { age: text });
-  return text;
+  const text = amount(age.years, 'age.billion', 'age.million', 'age.years');
+  const qualified =
+    age.qualifier === 'about'
+      ? t('age.about', { amount: text })
+      : age.qualifier === 'at-least'
+        ? t('age.atLeast', { amount: text })
+        : text;
+  return t('age.ago', { amount: qualified });
 }
 
 /** A span of time such as "539 million years" or "13.8 billion years", rounded like `formatAgo`. */
 export function formatSpan(years: number): string {
-  const number = (n: number, digits = 0): string =>
-    new Intl.NumberFormat(locale, { maximumFractionDigits: digits }).format(n);
-  if (years >= 1e9) return t('age.span.billion', { n: number(years / 1e9, 1) });
-  if (years >= 1e6) return t('age.span.million', { n: number(Math.round(years / 1e6)) });
-  if (years >= 1e5) return t('age.span.years', { n: number(Math.round(years / 1000) * 1000) });
-  return t('age.span.years', { n: number(Math.round(years / 100) * 100) });
+  return amount(years, 'age.span.billion', 'age.span.million', 'age.span.years');
+}
+
+function amount(
+  years: number,
+  billion: MessageKey,
+  million: MessageKey,
+  plain: MessageKey,
+): string {
+  // The count picks singular or plural words ("1,8 milliard", "4,6 milliards").
+  const say = (key: MessageKey, n: number, digits = 0): string => {
+    const rounded = Number(n.toFixed(digits));
+    const shown = new Intl.NumberFormat(locale, { maximumFractionDigits: digits }).format(rounded);
+    return t(key, { n: shown }, rounded);
+  };
+  if (years >= 1e9) return say(billion, years / 1e9, 1);
+  if (years >= 1e6) return say(million, Math.round(years / 1e6));
+  if (years >= 1e5) return say(plain, Math.round(years / 1000) * 1000);
+  return say(plain, Math.round(years / 100) * 100);
 }

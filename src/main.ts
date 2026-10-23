@@ -1,5 +1,5 @@
 import './styles.css';
-import { t } from './i18n/i18n';
+import { locale, t } from './i18n/i18n';
 import { event as findEvent, resolveAge } from './data';
 import { CORKSCREW, createHelixPath } from './geometry/helix';
 import { formatAgo } from './render/format';
@@ -13,9 +13,11 @@ import {
   type JourneyStep,
 } from './tour/journey';
 import { playJourney, type JourneyPlayer } from './tour/player';
-import { createCard, flagCard } from './ui/card';
+import { createCard, flagCard, spokenText } from './ui/card';
 import { createJourneyPanel } from './ui/journey-panel';
+import { createLanguageSwitch, createStartScreen } from './ui/start-screen';
 import { createViewBar } from './ui/view-bar';
+import { createVoice } from './voice/speech';
 
 function required(selector: string): HTMLElement {
   const element = document.querySelector<HTMLElement>(selector);
@@ -26,6 +28,7 @@ function required(selector: string): HTMLElement {
 const app = required('#app');
 
 document.title = t('app.title');
+document.documentElement.lang = locale;
 const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 const params = new URLSearchParams(window.location.search);
 // ?view=2d stays flat; ?view=3d forces 3D even on software WebGL.
@@ -67,7 +70,9 @@ credits.target = '_blank';
 credits.rel = 'noopener';
 credits.textContent = t('app.credits');
 
-const openCard = createCard(document.body);
+// One voice for everything (journey captions and cards), slow and in the page's language.
+const voice = createVoice(locale);
+const openCard = createCard(document.body, voice);
 let view3d: HelixView | null = null;
 let has3d = false;
 const bar = createViewBar({
@@ -80,10 +85,26 @@ const bar = createViewBar({
   onJourney: () => {
     startJourney();
   },
+  onVoice: (on) => {
+    voice.setMuted(!on);
+  },
 });
-bar.element.hidden = true;
+const showVoice = (): void => {
+  bar.setVoice(!voice.muted(), voice.available());
+};
+voice.onChange(showVoice);
+showVoice();
 
 app.append(header, stage2d, stage3d, flash, bar.element, credits);
+const languages = createLanguageSwitch(app);
+// The start screen, until Start is tapped.
+let landing = false;
+/** The view buttons and language switch: hidden on the start screen and during the journey. */
+const showControls = (visible: boolean): void => {
+  bar.element.hidden = !visible;
+  languages.hidden = !visible;
+};
+showControls(false);
 app.dataset.view = '2d';
 
 interface RunningJourney {
@@ -187,8 +208,12 @@ function startJourney(): void {
   if (journey) return;
   const steps = buildJourney(helixPath, spanYears, JOURNEY_SPEED);
   app.classList.add('journeying');
-  bar.element.hidden = true;
+  showControls(false);
   panel.show(reducedMotion ? 'steps' : 'auto');
+  // Each caption is read aloud as it appears.
+  const say = (caption: JourneyState['caption']): void => {
+    if (caption) void voice.say(spokenText(caption));
+  };
 
   const finish = (): void => {
     journey = null;
@@ -198,7 +223,7 @@ function startJourney(): void {
     flash.style.opacity = '0';
     view3d?.journey(null);
     if (app.dataset.view === '2d') draw2d(false, true);
-    bar.element.hidden = false;
+    showControls(true);
     bar.setMode(app.dataset.view === '3d' ? '3d' : '2d', has3d);
   };
 
@@ -206,15 +231,23 @@ function startJourney(): void {
     const captions = steps.flatMap((step) => (step.caption ? [step.caption] : []));
     let index = 0;
     panel.setCaption(captions[0]);
+    say(captions[0]);
     journey = {
       steps,
       player: null,
       state: null,
-      skip: finish,
+      skip: () => {
+        voice.cancel();
+        finish();
+      },
       next: () => {
         index += 1;
-        if (index >= captions.length) finish();
-        else panel.setCaption(captions[index]);
+        if (index >= captions.length) {
+          finish();
+        } else {
+          panel.setCaption(captions[index]);
+          say(captions[index]);
+        }
       },
     };
     if (app.dataset.view === '2d') draw2d(false, true);
@@ -225,18 +258,27 @@ function startJourney(): void {
     steps,
     player: null,
     state: null,
-    skip: () => running.player?.skip(),
+    skip: () => {
+      voice.cancel();
+      running.player?.skip();
+    },
     next: () => undefined,
   };
   journey = running;
   // Measured once (and again on resize), not every frame: measuring forces a layout.
   inset = panel.inset();
   let flashShown = 0;
+  let spoken = -1;
   running.player = playJourney(
     steps,
     (state) => {
       running.state = state;
       panel.setCaption(state.caption);
+      // (The first one is read inside the tap that started the journey: iOS needs that.)
+      if (state.captionStep !== spoken) {
+        spoken = state.captionStep;
+        say(state.caption);
+      }
       panel.setCounter(
         state.travelling ? formatAgo({ years: state.f * spanYears, qualifier: 'exact' }) : null,
       );
@@ -246,13 +288,26 @@ function startJourney(): void {
       else reveal2d?.(state.f, state.popped);
     },
     finish,
+    // The spark waits at each stop until the voice has finished reading.
+    () => voice.speaking(),
   );
   if (app.dataset.view === '2d') draw2d(true, true);
 }
 
+// Landing: the whole spiral behind the start screen; Start (a tap, so the voice may speak) begins
+// the journey. ?journey=0 opens straight on the spiral.
 const playJourneyOnLanding = journeyParam !== '0';
-if (playJourneyOnLanding) startJourney();
-else draw2d(true);
+if (playJourneyOnLanding) {
+  landing = true;
+  draw2d(false);
+  const screen = createStartScreen(app, () => {
+    landing = false;
+    screen.hide();
+    startJourney();
+  });
+} else {
+  draw2d(true);
+}
 
 // Upgrade to 3D, in idle time, if the browser draws WebGL with real graphics hardware. (Even the
 // check is slow where WebGL is drawn in software, so it must not hold up the first paint.) During
@@ -260,7 +315,7 @@ else draw2d(true);
 if (requested !== '2d') {
   const start = (): void => {
     has3d = webglAvailable(requested === '3d');
-    if (!journey) bar.element.hidden = false;
+    if (!journey && !landing) showControls(true);
     bar.setMode('2d', has3d);
     if (!has3d) return;
     show3d().catch((error: unknown) => {
@@ -280,7 +335,7 @@ if (requested !== '2d') {
   const wait = reducedMotion || requested === '3d' ? 0 : INTRO_2D_MS;
   window.setTimeout(whenIdle, wait);
 } else {
-  bar.element.hidden = playJourneyOnLanding;
+  showControls(!playJourneyOnLanding);
   bar.setMode('2d', false);
 }
 

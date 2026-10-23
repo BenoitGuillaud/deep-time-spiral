@@ -25,9 +25,16 @@ browser has WebGL. Spin with one finger, pinch to zoom, slide with two fingers (
 or the **Move** button), and tap a picture to fly to it. Without a graphics chip (WebGL drawn in software, about
 2 frames per second) the page stays in 2D. Add `?view=2d` to the address to stay in 2D, or `?view=3d` to force 3D.
 
-Every visit opens with a slow **journey** (about 45 s) from Now back to the Big Bang, with captions beside the spiral;
-**Skip** (or Escape) jumps to the end and the **Journey** button replays it. `?journey=0` opens straight on the spiral,
-`?journey=fast` plays it 12× faster (both for tests).
+Every visit opens on a **start screen**: pick a language, then **Start** begins a slow **journey** (about a minute)
+from Now back to the Big Bang, with captions beside the spiral, **read aloud slowly** by the browser's own voice
+(`speechSynthesis`, 0.8× speed; the spark waits at each stop until the voice has finished). **Skip** (or Escape) jumps
+to the end and the **Journey** button replays it. Tapping a picture reads its card aloud; the **Voice** button turns
+the voice off. Where the device has no voice for the language, the text still shows and the speaker greys out.
+`?journey=0` opens straight on the spiral, `?journey=fast` plays the journey 12× faster (both for tests).
+
+**Languages:** English, French, German and Hungarian (`?lang=en|fr|de|hu`, otherwise the last choice, then the
+browser's language). The French, German and Hungarian texts are **first drafts by Claude, not yet reviewed by native
+speakers**: corrections are welcome in `src/i18n/*.json`.
 
 ```bash
 npm run build && npm run preview

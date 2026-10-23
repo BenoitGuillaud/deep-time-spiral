@@ -209,6 +209,137 @@ a {
   background: rgb(255 209 102 / 22%);
 }
 
+.view-button:disabled {
+  opacity: 0.4;
+  cursor: default;
+}
+
+/* Phones: seven slimmer buttons fit, and the credits move to the top corner. */
+@media (max-width: 480px) {
+  .view-bar {
+    gap: 4px;
+  }
+
+  .view-button {
+    width: 48px;
+    height: 52px;
+    font-size: 11px;
+  }
+
+  .credits-link {
+    top: 0;
+    bottom: auto;
+  }
+}
+
+/* Start screen: the languages and one big Start, over the spiral */
+
+.start-screen {
+  position: absolute;
+  inset: 0;
+  z-index: 4;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 28px;
+  padding: 96px 16px 24px;
+  background: rgb(6 10 20 / 60%);
+  transition: opacity 0.45s ease-out;
+}
+
+.start-screen.leaving {
+  opacity: 0;
+  pointer-events: none;
+}
+
+.start-languages {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 10px;
+  max-width: 560px;
+}
+
+.start-languages button,
+.language-switch button {
+  border: 1.5px solid rgb(255 255 255 / 35%);
+  border-radius: 26px;
+  background: rgb(11 20 38 / 85%);
+  color: var(--color-text);
+  font: 700 1.15rem var(--font-body);
+  cursor: pointer;
+}
+
+.start-languages button {
+  min-width: 128px;
+  padding: 0 20px;
+}
+
+.start-languages button[aria-pressed='true'],
+.language-switch button[aria-pressed='true'] {
+  border-color: var(--color-now);
+  background: rgb(255 209 102 / 22%);
+}
+
+.start-button {
+  display: inline-flex;
+  align-items: center;
+  gap: 12px;
+  min-height: 84px;
+  padding: 0 40px 0 30px;
+  border: none;
+  border-radius: 42px;
+  background: var(--color-now);
+  color: #1a1300;
+  font: 800 1.8rem var(--font-body);
+  box-shadow: 0 0 40px rgb(255 209 102 / 45%);
+  cursor: pointer;
+  animation: start-glow 2.4s ease-in-out infinite;
+}
+
+.start-button svg {
+  width: 40px;
+  height: 40px;
+  fill: currentColor;
+}
+
+.start-languages button:focus-visible,
+.language-switch button:focus-visible,
+.start-button:focus-visible {
+  outline: 3px solid #ffffff;
+  outline-offset: 3px;
+}
+
+@keyframes start-glow {
+  50% {
+    box-shadow: 0 0 70px rgb(255 209 102 / 75%);
+  }
+}
+
+/* The small language switch: top right, or under the title on phones */
+.language-switch {
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  z-index: 2;
+  display: flex;
+  gap: 4px;
+}
+
+.language-switch button {
+  min-width: 48px;
+  font-size: 0.85rem;
+}
+
+@media (max-width: 640px) {
+  .language-switch {
+    top: 68px;
+    right: 50%;
+    transform: translateX(50%);
+  }
+}
+
 /* Scene */
 
 .event {
@@ -388,6 +519,36 @@ a {
   justify-content: center;
   color: var(--color-muted);
   font-size: 0.9rem;
+}
+
+.card-listen {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  width: fit-content;
+  margin: 10px auto 0;
+  padding: 0 18px;
+  border: 1.5px solid rgb(255 255 255 / 30%);
+  border-radius: 24px;
+  background: rgb(255 255 255 / 8%);
+  color: var(--color-text);
+  font: 700 1rem var(--font-body);
+  cursor: pointer;
+}
+
+.card-listen svg {
+  width: 22px;
+  height: 22px;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 1.8;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.card-listen:disabled {
+  opacity: 0.4;
+  cursor: default;
 }
 
 .card-close {
@@ -617,6 +778,7 @@ a {
 }
 
 @media (prefers-reduced-motion: reduce) {
+  .start-button,
   .journey-panel,
   .journey-caption {
     animation: none;
