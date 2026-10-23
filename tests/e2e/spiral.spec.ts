@@ -3,13 +3,14 @@ import en from '../../src/i18n/en.json' with { type: 'json' };
 
 const EVENT_COUNT = 7;
 
+/** The 2D view (also the fallback without WebGL). The 3D vortex has its own tests in vortex.spec.ts. */
 async function openSpiral(page: Page): Promise<string[]> {
   const errors: string[] = [];
   page.on('console', (message) => {
     if (message.type() === 'error') errors.push(message.text());
   });
   page.on('pageerror', (error) => errors.push(error.message));
-  await page.goto('./');
+  await page.goto('./?view=2d');
   await expect(page.getByRole('button')).toHaveCount(EVENT_COUNT);
   return errors;
 }
