@@ -11,7 +11,7 @@ async function openSpiral(page: Page): Promise<string[]> {
     if (message.type() === 'error') errors.push(message.text());
   });
   page.on('pageerror', (error) => errors.push(error.message));
-  await page.goto('./?view=2d');
+  await page.goto('./?view=2d&journey=0');
   await expect(page.locator('.stage-2d [role=button]')).toHaveCount(EVENT_COUNT);
   return errors;
 }

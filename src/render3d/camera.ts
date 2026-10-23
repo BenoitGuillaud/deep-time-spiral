@@ -1,4 +1,4 @@
-import type { Point3 } from '../geometry/helix';
+import type { HelixPath, Point3 } from '../geometry/helix';
 
 /** Camera maths for the 3D view: orbit positions, framing, presets and fly-to. Pure functions. */
 
@@ -128,6 +128,35 @@ function lerp(a: Point3, b: Point3, t: number): Point3 {
 export function flightPose(from: CameraPose, to: CameraPose, t: number): CameraPose {
   const e = easeInOutCubic(t);
   return { position: lerp(from.position, to.position, e), target: lerp(from.target, to.target, e) };
+}
+
+const smoothstep = (a: number, b: number, x: number): number => {
+  const t = Math.min(1, Math.max(0, (x - a) / (b - a)));
+  return t * t * (3 - 2 * t);
+};
+
+/**
+ * The camera during the landing journey, with the spark at `f`. It starts low and close to the Now
+ * glow, widens to show the whole top turn, then dives down into the tightening vortex, looking more
+ * and more steeply into it. Continuous in `f`, so the views can follow it smoothly. `aspect` is the
+ * free screen area's (beside the caption panel).
+ */
+export function journeyPose(path: HelixPath, f: number, aspect: number): CameraPose {
+  const now = path.pointAt(0);
+  const spark = path.pointAt(f);
+  const radius = Math.hypot(spark.x, spark.z);
+  // 0 at Now → 1 once the top turn is drawn.
+  const wide = smoothstep(0, path.fractionAtTurn(1), f);
+  // Close up, aim a little above Now, so the flag standing there is in the picture too.
+  const target = lerp({ ...now, y: now.y + 0.14 }, { x: 0, y: spark.y * 0.85, z: 0 }, wide);
+  const close = 1 / Math.min(1, aspect) ** 0.5;
+  // Room for the whole local coil, including its near side (bigger, being closer).
+  const distance = close + (fitDistance(0.3 + 1.15 * radius, FOV, aspect) - close) * wide;
+  // Low beside Now, higher to see the whole top turn, then steeply down into the vortex.
+  const elevation = 12 + 18 * wide + 28 * smoothstep(0.2, 1, f);
+  // A slow drift against the spark's direction, for depth.
+  const azimuth = 25 - 60 * f;
+  return { target, position: orbit(target, distance, azimuth, elevation) };
 }
 
 export interface Projected {
