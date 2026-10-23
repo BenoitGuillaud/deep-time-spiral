@@ -22,6 +22,11 @@ export interface Helix {
   bottomRadius: number;
   /** How far below Now the bottom tip lies. */
   depth: number;
+  /**
+   * How much tighter the coils stack towards the bottom: 1 = evenly spaced; above 1 the drop per
+   * coil shrinks, so the deep (empty) coils pack together and the top ones stay apart.
+   */
+  stacking: number;
   /** Ribbon width on the top coil; it narrows in step with the radius. */
   topWidth: number;
 }
@@ -53,10 +58,11 @@ function assertHelix(h: Helix): void {
     h.topRadius > h.bottomRadius &&
     h.bottomRadius > 0 &&
     h.depth > 0 &&
+    h.stacking >= 1 &&
     h.topWidth > 0
   )) {
     throw new RangeError(
-      'Helix needs turns > 0, topRadius > bottomRadius > 0, depth > 0 and a width',
+      'Helix needs turns > 0, topRadius > bottomRadius > 0, depth > 0, stacking ≥ 1 and a width',
     );
   }
 }
@@ -69,7 +75,8 @@ const radiusAt = (h: Helix, t: number): number =>
 export function helixCentre(h: Helix, t: number): Point3 {
   const r = radiusAt(h, t);
   const a = 2 * Math.PI * t;
-  return { x: r * Math.sin(a), y: (-h.depth * t) / h.turns, z: r * Math.cos(a) };
+  const s = t / h.turns;
+  return { x: r * Math.sin(a), y: -h.depth * (1 - (1 - s) ** h.stacking), z: r * Math.cos(a) };
 }
 
 /** Builds the corkscrew with a length table, so positions can be given as fractions of the length. */
@@ -139,6 +146,9 @@ export const CORKSCREW: Helix = {
   turns: 14,
   topRadius: 1,
   bottomRadius: 0.06,
-  depth: 1.6,
-  topWidth: 0.12,
+  depth: 1.4,
+  // Benoît, 2026-10-23: the deep coils (mostly the time before the Earth) stack tighter.
+  stacking: 2.2,
+  // Narrow enough that every coil reads as its own line, down to the Big Bang.
+  topWidth: 0.045,
 };

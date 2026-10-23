@@ -47,6 +47,12 @@ describe('the corkscrew', () => {
     });
   });
 
+  it('stacks the deep coils tighter than the top ones', () => {
+    const drop = (k: number) => helixCentre(CORKSCREW, k).y - helixCentre(CORKSCREW, k + 1).y;
+    expect(drop(0)).toBeGreaterThan(5 * drop(CORKSCREW.turns - 1));
+    for (let k = 1; k < CORKSCREW.turns; k++) expect(drop(k)).toBeLessThan(drop(k - 1));
+  });
+
   it('is invertible between length fractions and coil turns', () => {
     for (const f of SAMPLES) {
       expect(path.fractionAtTurn(path.turnAt(f))).toBeCloseTo(f, 9);
