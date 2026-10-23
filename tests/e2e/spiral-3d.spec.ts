@@ -21,7 +21,7 @@ function collectErrors(page: Page): string[] {
  */
 async function open3d(page: Page): Promise<string[]> {
   const errors = collectErrors(page);
-  await page.goto('./?view=3d');
+  await page.goto('./?view=3d&journey=0');
   const webgl = await page.evaluate(() => {
     const canvas = document.createElement('canvas');
     return Boolean(canvas.getContext('webgl2') ?? canvas.getContext('webgl'));
@@ -181,10 +181,12 @@ test('without WebGL, stays on the 2D view', async ({ page }) => {
     });
   });
   const errors = collectErrors(page);
-  await page.goto('./');
+  await page.goto('./?journey=0');
   await expect(page.locator('.stage-2d [role=button]')).toHaveCount(STICKERS);
   await page.waitForTimeout(2000);
   await expect(page.locator('#app')).toHaveAttribute('data-view', '2d');
-  await expect(page.locator('.view-bar')).toBeHidden();
+  // Only the Journey button: no 3D to switch to.
+  await expect(page.getByRole('button', { name: en['journey.play'] })).toBeVisible();
+  await expect(page.getByRole('button', { name: en['view.3d'], exact: true })).toBeHidden();
   expect(errors).toEqual([]);
 });
