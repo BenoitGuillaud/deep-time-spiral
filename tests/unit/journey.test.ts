@@ -12,6 +12,7 @@ import {
   timeAtFraction,
   timeOfPop,
 } from '../../src/tour/journey';
+import { advanceClock } from '../../src/tour/player';
 
 const path = createHelixPath(CORKSCREW);
 const span = resolveAge(event('big-bang')).years;
@@ -115,5 +116,20 @@ describe('journeyPose', () => {
       );
       expect(nearest, `at ${String(f)}`).toBeGreaterThan(0.12);
     }
+  });
+});
+
+describe('the journey clock', () => {
+  it('shows every step at least once, even when frames come slowly', () => {
+    let elapsed = 0;
+    // The player draws the opening first, at 0.
+    const visited = new Set<number>([0]);
+    // Half a second per frame, like a slow device (or a sped-up test).
+    const fast = buildJourney(path, span, 12);
+    while (elapsed < journeyLength(fast)) {
+      elapsed = advanceClock(fast, elapsed, 500);
+      visited.add(journeyState(fast, elapsed).step);
+    }
+    expect(visited.size).toBe(fast.length);
   });
 });
