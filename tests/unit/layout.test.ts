@@ -12,12 +12,12 @@ const SCREENS = [
 
 describe('computeLayout', () => {
   it.each(SCREENS)(
-    '%s: puts the lens beside the spiral in landscape, below it in portrait',
+    '%s: puts the lens beside the spiral in landscape, above it in portrait',
     (_, w, h) => {
       const { landscape, main, lens } = computeLayout(w, h);
       expect(landscape).toBe(w / h >= 1.1);
       if (landscape) expect(lens.x).toBeGreaterThan(main.x);
-      else expect(lens.y).toBeGreaterThan(main.y);
+      else expect(lens.y).toBeLessThan(main.y);
     },
   );
 

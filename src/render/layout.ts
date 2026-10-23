@@ -24,12 +24,13 @@ export function computeLayout(width: number, height: number): Layout {
   const free = { x: 0, y: header, w: width, h: height - header };
 
   const split = landscape ? 0.56 : 0.55;
+  // Portrait puts the lens above the main spiral, matching the 3D view seen from above.
   const mainBox = landscape
     ? { x: free.x, y: free.y, w: free.w * split, h: free.h }
-    : { x: free.x, y: free.y, w: free.w, h: free.h * split };
+    : { x: free.x, y: free.y + free.h * (1 - split), w: free.w, h: free.h * split };
   const lensBox = landscape
     ? { x: free.x + mainBox.w, y: free.y, w: free.w - mainBox.w, h: free.h }
-    : { x: free.x, y: free.y + mainBox.h, w: free.w, h: free.h - mainBox.h };
+    : { x: free.x, y: free.y, w: free.w, h: free.h * (1 - split) };
 
   // Room around each spiral for badges and labels that stick out of the ribbon.
   const mainMargin = clamp(Math.min(mainBox.w, mainBox.h) * 0.12, 28, 56);
