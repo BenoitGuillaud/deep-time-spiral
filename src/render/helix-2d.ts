@@ -31,7 +31,20 @@ export interface Helix2dOptions {
   spanYears: number;
   animate: boolean;
   onSelect: (flag: Flag) => void;
+  /**
+   * The landing journey: everything starts hidden and `reveal` shows it as the spark passes.
+   * (Without it, the ribbon draws itself in `DRAW_SECONDS`.)
+   */
+  journey?: {
+    /** Stretches of ribbon that glow for a while (`start`: seconds from now; may be negative). */
+    highlights: { from: number; to: number; start: number; seconds: number }[];
+  };
+  /** Screen space covered by the caption panel: the spiral is framed beside it. */
+  inset?: { right: number; bottom: number };
 }
+
+/** Shows the journey's progress: the ribbon up to `f`, and the pictures popped so far. */
+export type Reveal2d = (f: number, popped: readonly string[]) => void;
 
 const DRAW_SECONDS = 2.4;
 const SKY = '#060a14';
@@ -97,6 +110,8 @@ function flagButton(
   placed: PlacedFlag,
   at: Projected,
   size: number,
+  /** Seconds before it pops in; null: it waits, hidden, until the journey reveals it. */
+  delay: number | null,
   onSelect: (flag: Flag) => void,
 ): void {
   const { look, flag } = placed;
@@ -117,11 +132,12 @@ function flagButton(
         onSelect(flag);
       }
     });
+  if (delay === null) button.classed('waiting', true);
   // Pops in as the drawing ribbon reaches it.
   const pop = button
     .append('g')
     .attr('class', 'pop')
-    .style('animation-delay', `${(flag.f * DRAW_SECONDS).toFixed(2)}s`);
+    .style('animation-delay', `${(delay ?? 0).toFixed(2)}s`);
   // Invisible hit area: at least 48 × 48 px even when the badge is drawn smaller.
   pop
     .append('circle')
@@ -139,12 +155,27 @@ function flagButton(
     .text(look.label);
 }
 
-export function renderHelix2d(container: HTMLElement, options: Helix2dOptions): void {
-  const { width, height, spanYears, onSelect } = options;
+/** Draws the corkscrew; during the journey, returns the function that reveals it bit by bit. */
+export function renderHelix2d(container: HTMLElement, options: Helix2dOptions): Reveal2d | null {
+  const { width, height, spanYears, onSelect, journey } = options;
+  const delay = (seconds: number): string => `${seconds.toFixed(2)}s`;
+  // During the journey, things wait hidden (no pending animations, which cost every frame) and
+  // `reveal` shows them as the spark passes: only the few new ones each frame.
+  const waiting: { f: number; element: SVGElement }[] = [];
+  const hideUntil = (element: SVGElement | null, f: number): void => {
+    if (!journey || !element) return;
+    element.setAttribute('visibility', 'hidden');
+    waiting.push({ f, element });
+  };
   const path = createHelixPath(CORKSCREW);
   const placed = placeFlags(path, spanYears);
-  const pose = presetPose('home', outlineOf(path, placed), viewFrame(width, height));
-  const project = projector(pose, FOV, width, height);
+  // Framed in the free area (beside the panel); the stars still fill the whole screen.
+  const free = {
+    width: width - (options.inset?.right ?? 0),
+    height: height - (options.inset?.bottom ?? 0),
+  };
+  const pose = presetPose('home', outlineOf(path, placed), viewFrame(free.width, free.height));
+  const project = projector(pose, FOV, free.width, free.height);
 
   const svg = select(container)
     .append('svg')
@@ -187,36 +218,60 @@ export function renderHelix2d(container: HTMLElement, options: Helix2dOptions): 
   for (const piece of pieces) {
     const far = (piece.depth - depthMin) / (depthMax - depthMin || 1);
     const fill = dim(piece.colour, 0.35 * far);
-    ribbon
+    const polygon = ribbon
       .append('polygon')
-      .attr('class', 'seg')
+      .attr('class', journey ? null : 'seg')
       .attr('points', piece.points.map((p) => `${px(p.x)},${px(p.y)}`).join(' '))
       .attr('fill', fill)
       .attr('stroke', fill)
       .attr('stroke-width', 0.6)
-      .style('animation-delay', `${(piece.f * DRAW_SECONDS).toFixed(2)}s`);
+      .style('animation-delay', delay(piece.f * DRAW_SECONDS));
+    hideUntil(polygon.node(), piece.f);
     // Stardust on the time before the Earth (decoration, not data).
     if (piece.cosmos && random() < 0.28) {
       const p = piece.points[0];
       if (p) {
-        ribbon
+        const speck = ribbon
           .append('circle')
-          .attr('class', 'seg')
+          .attr('class', journey ? null : 'seg')
           .attr('cx', px(p.x + (random() - 0.5) * 6))
           .attr('cy', px(p.y + (random() - 0.5) * 4))
           .attr('r', (0.5 + random() * 0.8).toFixed(2))
           .attr('fill', '#efeaff')
-          .style('animation-delay', `${(piece.f * DRAW_SECONDS).toFixed(2)}s`);
+          .style('animation-delay', delay(piece.f * DRAW_SECONDS));
+        hideUntil(speck.node(), piece.f);
       }
     }
+  }
+
+  // The journey's glowing stretches (e.g. all the dinosaurs), over the ribbon.
+  for (const h of journey?.highlights ?? []) {
+    const n = Math.max(2, Math.ceil(((h.to - h.from) * path.length) / 0.01));
+    const points = Array.from({ length: n + 1 }, (_, i) =>
+      project(path.pointAt(h.from + ((h.to - h.from) * i) / n)),
+    );
+    svg
+      .append('polyline')
+      .attr('class', 'journey-glow')
+      .attr('points', points.map((p) => `${px(p.x)},${px(p.y)}`).join(' '))
+      .attr('aria-hidden', 'true')
+      .style('animation-delay', delay(h.start))
+      .style('animation-duration', `${h.seconds.toFixed(2)}s`);
   }
 
   // Glows: Now at the start, the Big Bang at the bottom tip; "You are here" just left of Now, where
   // nothing is drawn (the ribbon starts at Now).
   const scale = (p: Projected): number => height / 2 / Math.tan((FOV * Math.PI) / 360) / p.depth;
-  const glow = (at: Point3, size: number, id: string): void => {
+  const glow = (at: Point3, size: number, id: string, appear: number | null = null): void => {
     const p = project(at);
-    svg
+    const group = svg.append('g');
+    if (appear !== null) {
+      group
+        .attr('class', journey ? null : 'seg')
+        .style('animation-delay', delay(appear * DRAW_SECONDS));
+      hideUntil(group.node(), appear);
+    }
+    group
       .append('circle')
       .attr('class', 'pulse')
       .attr('cx', px(p.x))
@@ -227,7 +282,7 @@ export function renderHelix2d(container: HTMLElement, options: Helix2dOptions): 
   };
   const now = path.pointAt(0);
   glow(now, 0.34, 'glow-now');
-  glow(path.pointAt(1), 0.75, 'glow-bang');
+  glow(path.pointAt(1), 0.75, 'glow-bang', 1);
   const you = project({ x: now.x - YOU_GAP, y: now.y, z: now.z });
   svg
     .append('text')
@@ -246,13 +301,34 @@ export function renderHelix2d(container: HTMLElement, options: Helix2dOptions): 
     const top = project(p.top);
     flags
       .append('line')
-      .attr('class', 'pointer')
       .attr('x1', px(foot.x))
       .attr('y1', px(foot.y))
       .attr('x2', px(top.x))
       .attr('y2', px(top.y))
       .attr('stroke', p.look.ring)
-      .attr('aria-hidden', 'true');
+      .attr('aria-hidden', 'true')
+      .attr('data-event', p.look.id)
+      .attr('class', journey ? 'pointer waiting' : 'pointer seg')
+      .style('animation-delay', delay(p.flag.f * DRAW_SECONDS));
   }
-  for (const p of placed) flagButton(flags, p, project(p.top), size, onSelect);
+  for (const p of placed) {
+    flagButton(flags, p, project(p.top), size, journey ? null : p.flag.f * DRAW_SECONDS, onSelect);
+  }
+
+  if (!journey) return null;
+  waiting.sort((a, b) => a.f - b.f);
+  let shown = 0;
+  const flagElements = flags.selectAll<SVGElement, unknown>('[data-event]').nodes();
+  return (f, popped) => {
+    while (shown < waiting.length && (waiting[shown]?.f ?? Infinity) <= f) {
+      waiting[shown]?.element.removeAttribute('visibility');
+      shown += 1;
+    }
+    for (const element of flagElements) {
+      const id = element.getAttribute('data-event') ?? '';
+      if (element.classList.contains('waiting') && popped.includes(id)) {
+        element.classList.remove('waiting');
+      }
+    }
+  };
 }
