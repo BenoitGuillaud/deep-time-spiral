@@ -3,7 +3,7 @@ import { event as findEvent, resolveAge } from '../data';
 import { isMessageKey, t } from '../i18n/i18n';
 import { formatAgo } from '../render/format';
 import { drawBadge } from '../render/illustrations/icons';
-import type { EventMarker } from '../render/scene';
+import type { EventMarker } from '../render/events';
 
 function element<K extends keyof HTMLElementTagNameMap>(
   tag: K,

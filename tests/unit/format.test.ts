@@ -2,7 +2,7 @@ import { describe, expect, it } from 'vitest';
 import { event, resolveAge } from '../../src/data';
 import { isMessageKey } from '../../src/i18n/i18n';
 import { formatAgo, formatSpanMillions } from '../../src/render/format';
-import { eventName, LENS_EVENTS, MAIN_EVENTS } from '../../src/render/scene';
+import { eventName, LENS_EVENTS, MAIN_EVENTS } from '../../src/render/events';
 
 describe('formatAgo', () => {
   it.each([

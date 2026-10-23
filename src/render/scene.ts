@@ -9,36 +9,24 @@ import {
   type Point,
   type TimeMapping,
 } from '../geometry/spiral';
-import { isMessageKey, t } from '../i18n/i18n';
+import { t } from '../i18n/i18n';
 import { formatAgo, formatSpanMillions } from './format';
-import { drawBadge, type IllustrationKind } from './illustrations/icons';
+import {
+  COSMOS_COLOR,
+  eventLabel,
+  eventName,
+  LENS_EVENTS,
+  MAIN_EVENTS,
+  timeSpans,
+  zoomFactor,
+  type EventMarker,
+} from './events';
+import { drawBadge } from './illustrations/icons';
 import { beamPolygon, computeLayout, type Layout } from './layout';
+import { seeded } from './seeded';
 
 type Group = Selection<SVGGElement, unknown, null, undefined>;
 
-export interface EventMarker {
-  id: string;
-  art: IllustrationKind;
-  ring: string;
-}
-
-/** Events on the main spiral (Big Bang → now). */
-export const MAIN_EVENTS: EventMarker[] = [
-  { id: 'big-bang', art: 'big-bang', ring: '#ffd166' },
-  { id: 'solar-system', art: 'solar-system', ring: '#ffb347' },
-  { id: 'first-life', art: 'first-life', ring: '#5fe3b1' },
-];
-
-/** Events inside the zoom lens (the Phanerozoic, 538.8 million years ago → now). */
-export const LENS_EVENTS: EventMarker[] = [
-  { id: 'animals-with-shells', art: 'trilobite', ring: '#9ad9dd' },
-  { id: 'first-dinosaurs', art: 'herrerasaurus', ring: '#f4a261' },
-  { id: 'last-dinosaurs', art: 'tyrannosaurus', ring: '#ff8a7a' },
-  { id: 'first-people', art: 'people', ring: '#ffd166' },
-];
-
-/** Not an ICS colour: the time before the Earth existed. */
-const COSMOS_COLOR = '#3b2f8f';
 const DRAW_SECONDS = 2.8;
 
 export interface SceneOptions {
@@ -52,17 +40,6 @@ export interface SceneInfo {
   layout: Layout;
   /** How many times more path length one year gets inside the lens than on the main spiral. */
   zoom: number;
-}
-
-/** Small seeded random generator, so the star field is the same on every visit. */
-function seeded(seed: number): () => number {
-  let a = seed;
-  return () => {
-    a = (a + 0x6d2b79f5) | 0;
-    let x = Math.imul(a ^ (a >>> 15), 1 | a);
-    x = (x + Math.imul(x ^ (x >>> 7), 61 | x)) ^ x;
-    return ((x ^ (x >>> 14)) >>> 0) / 4294967296;
-  };
 }
 
 const px = (n: number): string => n.toFixed(1);
@@ -200,27 +177,6 @@ function starField(g: Group, width: number, height: number): void {
         .style('animation-duration', `${(2 + random() * 3).toFixed(2)}s`);
     }
   }
-}
-
-function eventTitle(id: string): string {
-  const key = `event.${id}.title`;
-  return isMessageKey(key) ? t(key) : id;
-}
-
-function eventLabel(id: string): string {
-  const key = `event.${id}.label`;
-  return isMessageKey(key) ? t(key) : eventTitle(id);
-}
-
-/**
- * Accessible name: the title and age, starting with the visible label when the title does not
- * already contain it, so voice control ("tap T. rex") finds the button.
- */
-export function eventName(id: string, ago: string): string {
-  const label = eventLabel(id);
-  const title = eventTitle(id);
-  const named = title.toLowerCase().includes(label.toLowerCase()) ? title : `${label}: ${title}`;
-  return `${named}, ${ago}`;
 }
 
 interface ButtonOptions {
@@ -374,8 +330,9 @@ export function renderScene(container: HTMLElement, options: SceneOptions): Scen
   starField(sky, width, height);
 
   // Time spans: the main spiral runs from now back to the Big Bang; the lens shows the Phanerozoic.
-  const bigBang = resolveAge(findEvent('big-bang')).years;
-  const phanerozoic = unit('Phanerozoic').begin.ma * 1e6;
+  const spans = timeSpans();
+  const bigBang = spans.main;
+  const phanerozoic = spans.lens;
   const mainSpiral: EvenSpiral = { turns: main.turns, outerRadius: main.r };
   const lensSpiral: EvenSpiral = { turns: lens.turns, outerRadius: lens.spiralRadius };
   const mainFrame: SpiralFrame = {
@@ -390,7 +347,7 @@ export function renderScene(container: HTMLElement, options: SceneOptions): Scen
     mapping: linearMapping(phanerozoic),
     length: evenSpiralLength(lensSpiral),
   };
-  const zoom = lensFrame.length / phanerozoic / (mainFrame.length / bigBang);
+  const zoom = zoomFactor(mainSpiral, lensSpiral);
 
   // Magnifier around the Phanerozoic (the middle of the main spiral) and the beam to the lens.
   const uPhanerozoic = mainFrame.mapping.toUnit(phanerozoic);
@@ -413,7 +370,7 @@ export function renderScene(container: HTMLElement, options: SceneOptions): Scen
   const mainRibbon = svg.append('g').attr('class', 'ribbon').attr('filter', 'url(#glow)');
   mainRibbon.attr('aria-hidden', 'true');
   const toU = (years: number): number => mainFrame.mapping.toUnit(Math.min(years, bigBang));
-  const earthStart = unit('Hadean').begin.ma * 1e6;
+  const earthStart = spans.earth;
   const stretches = [
     ...unitsOfRank('eon').map((eon) => ({
       young: eon.end.ma * 1e6,
