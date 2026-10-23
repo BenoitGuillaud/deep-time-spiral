@@ -94,7 +94,12 @@ test('plays stop by stop, reading every caption aloud slowly, and ends on the wh
   expect(seen.at(-1)).toBe(en['journey.end']);
 
   const words = await spoken(page);
-  expect(words[0]).toEqual({ text: 'This is now.', lang: 'en-GB', rate: 0.8 });
+  expect(words[0]).toEqual({
+    text: 'This is now.',
+    lang: 'en-GB',
+    rate: 0.8,
+    voice: 'Test voice en-GB',
+  });
   expect(words.map((w) => w.text).join(' ')).toContain('The Big Bang.');
   expect(words.every((w) => w.rate === 0.8)).toBe(true);
   await expect(page.getByRole('button', { name: en['journey.play'] })).toBeVisible();
@@ -110,6 +115,22 @@ test('the spark waits for the voice: nothing is cut off', async ({ page }) => {
   await page.waitForTimeout(1500);
   await expect(caption(page)).toContainText(en['cluster.title']);
   expect(await interruptions(page)).toBe(0);
+});
+
+test('a voice that never starts is replaced, and the words are read again', async ({ page }) => {
+  // "Samantha" would be the first choice, but here it hangs, like Chrome's Natural voices.
+  await installFakeVoice(page, {
+    extra: [{ name: 'Samantha', lang: 'en-US' }],
+    hang: ['Samantha'],
+  });
+  await start(page, 'view=2d&journey=fast');
+  await expect
+    .poll(async () => (await spoken(page)).map((w) => `${w.voice ?? ''}: ${w.text}`), {
+      timeout: 8000,
+    })
+    .toEqual(expect.arrayContaining(['Samantha: This is now.', 'Test voice en-GB: This is now.']));
+  // And the journey goes on with the working voice.
+  await expect(caption(page)).toContainText(en['cluster.title'], { timeout: 10_000 });
 });
 
 test.describe('in other languages', () => {

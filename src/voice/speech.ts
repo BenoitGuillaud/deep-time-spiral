@@ -22,6 +22,13 @@ export interface VoiceInfo {
 const NOVELTY =
   /\b(Albert|Bad News|Bahh|Bells|Boing|Bubbles|Cellos|Eddy|Flo|Fred|Good News|Grandma|Grandpa|Jester|Junior|Kathy|Organ|Ralph|Reed|Rocko|Sandy|Shelley|Superstar|Trinoids|Whisper|Wobble|Zarvox)\b/i;
 const NATURAL = /(enhanced|premium|natural|neural|siri)/i;
+// Chrome lists "Google … (Natural)" voices that never start speaking (checked in Chrome 149 on
+// macOS, 2026-10-23): rank them last.
+const HANGS = /^Google .*\(Natural\)/i;
+/** A voice that has not started speaking after this long is treated as broken. */
+const START_TIMEOUT_MS = 2500;
+/** At most this many voices are given up on, in case a browser never reports starting. */
+const MAX_SWITCHES = 2;
 
 /** The language's home region: France French before Canadian French, and so on. */
 const REGIONS: Record<Locale, readonly string[]> = {
@@ -49,7 +56,8 @@ export function pickVoice<V extends VoiceInfo>(voices: readonly V[], locale: Loc
   const score = (v: V): number => {
     const known = KNOWN[locale].findIndex((name) => v.name.startsWith(name));
     return (
-      (NATURAL.test(v.name) ? 100 : 0) +
+      (NATURAL.test(v.name) && !HANGS.test(v.name) ? 100 : 0) +
+      (HANGS.test(v.name) ? -150 : 0) +
       (known >= 0 ? 40 - known * 8 : 0) +
       (REGIONS[locale].includes(tag(v)) ? 30 : 0) +
       (NOVELTY.test(v.name) ? -200 : 0) +
@@ -101,10 +109,15 @@ export function createVoice(locale: Locale): Voice {
 
   let voice: SpeechSynthesisVoice | null = null;
   let loaded = false;
+  // Voices that did not start speaking: never picked again during this visit.
+  const broken = new Set<string>();
   const load = (): void => {
     const voices = synth?.getVoices() ?? [];
     loaded = voices.length > 0;
-    voice = pickVoice(voices, locale);
+    voice = pickVoice(
+      voices.filter((v) => !broken.has(v.name)),
+      locale,
+    );
     changed();
   };
   load();
@@ -133,7 +146,7 @@ export function createVoice(locale: Locale): Voice {
   // Voices load late in some browsers: until then, try anyway with just the language.
   const available = (): boolean => synth !== undefined && (!loaded || voice !== null);
 
-  return {
+  const api: Voice = {
     available,
     muted: () => muted,
     setMuted(next) {
@@ -164,6 +177,20 @@ export function createVoice(locale: Locale): Voice {
             resolve();
           }
         };
+        // If the voice never starts, give up on it and read the text again with the next best.
+        let started = false;
+        const tried = voice;
+        if (tried && broken.size < MAX_SWITCHES) {
+          timers.push(
+            window.setTimeout(() => {
+              if (started || finish !== resolve) return;
+              console.warn(`The voice "${tried.name}" did not start; trying another one`);
+              broken.add(tried.name);
+              load();
+              void api.say(text);
+            }, START_TIMEOUT_MS),
+          );
+        }
         // Called synchronously, so the first `say` inside a tap unlocks speech on iOS.
         let at = 0;
         try {
@@ -179,6 +206,9 @@ export function createVoice(locale: Locale): Voice {
               ended = true;
               partDone();
             };
+            utterance.addEventListener('start', () => {
+              started = true;
+            });
             utterance.addEventListener('end', end);
             utterance.addEventListener('error', end);
             synth.speak(utterance);
@@ -198,4 +228,5 @@ export function createVoice(locale: Locale): Voice {
       listeners.push(listener);
     },
   };
+  return api;
 }

@@ -9,28 +9,42 @@ export interface Spoken {
   text: string;
   lang: string;
   rate: number;
+  voice: string | null;
 }
 
 export async function installFakeVoice(
   page: Page,
-  { msPerChar = 1, languages = ['en-GB', 'fr-FR', 'de-DE', 'hu-HU'] } = {},
+  {
+    msPerChar = 1,
+    languages = ['en-GB', 'fr-FR', 'de-DE', 'hu-HU'],
+    // Extra voices by name and language; those in `hang` never start, like Chrome's Natural ones.
+    extra = [] as { name: string; lang: string }[],
+    hang = [] as string[],
+  } = {},
 ): Promise<void> {
   await page.addInitScript(
-    ({ msPerChar, languages }) => {
-      const spoken: { text: string; lang: string; rate: number }[] = [];
+    ({ msPerChar, languages, extra, hang }) => {
+      const spoken: { text: string; lang: string; rate: number; voice: string | null }[] = [];
       const pending = new Map<EventTarget, number>();
       let interrupted = 0;
-      const voices = languages.map((lang) => ({
-        name: `Test voice ${lang}`,
-        lang,
-        localService: true,
-        default: false,
-        voiceURI: lang,
-      }));
+      const voices = [
+        ...extra,
+        ...languages.map((lang) => ({ name: `Test voice ${lang}`, lang })),
+      ].map((v) => ({ ...v, localService: true, default: false, voiceURI: v.name }));
       const fake = {
         getVoices: () => voices,
-        speak(u: EventTarget & { text: string; lang: string; rate: number }) {
-          spoken.push({ text: u.text, lang: u.lang, rate: u.rate });
+        speak(
+          u: EventTarget & {
+            text: string;
+            lang: string;
+            rate: number;
+            voice: { name: string } | null;
+          },
+        ) {
+          const voice = u.voice?.name ?? null;
+          spoken.push({ text: u.text, lang: u.lang, rate: u.rate, voice });
+          if (voice !== null && hang.includes(voice)) return;
+          u.dispatchEvent(new Event('start'));
           const timer = window.setTimeout(() => {
             pending.delete(u);
             u.dispatchEvent(new Event('end'));
@@ -68,7 +82,7 @@ export async function installFakeVoice(
         fakeVoice: { spoken, interrupted: () => interrupted },
       });
     },
-    { msPerChar, languages },
+    { msPerChar, languages, extra, hang },
   );
 }
 
