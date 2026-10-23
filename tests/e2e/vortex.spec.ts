@@ -14,10 +14,14 @@ function collectErrors(page: Page): string[] {
   return errors;
 }
 
-/** Opens the page and waits for the 3D view; skips the test where this browser has no WebGL. */
+/**
+ * Opens the page in 3D and waits for it; skips the test where this browser has no WebGL at all.
+ * ?view=3d forces 3D even on software WebGL (CI machines have no graphics chip); by default such
+ * browsers get the 2D view.
+ */
 async function open3d(page: Page): Promise<string[]> {
   const errors = collectErrors(page);
-  await page.goto('./');
+  await page.goto('./?view=3d');
   const webgl = await page.evaluate(() => {
     const canvas = document.createElement('canvas');
     return Boolean(canvas.getContext('webgl2') ?? canvas.getContext('webgl'));

@@ -21,7 +21,8 @@ npm run dev -- --host  # also reachable from a tablet on the same Wi-Fi (use the
 ```
 
 The page draws the flat 2D spiral first, then lifts it into the 3D vortex (three.js) if the browser has WebGL.
-Spin with one finger, pinch to zoom, tap a picture to fly to it. Add `?view=2d` to the address to stay in 2D.
+Spin with one finger, pinch to zoom, tap a picture to fly to it. Without a graphics chip (WebGL drawn in software, about
+2 frames per second) the page stays in 2D. Add `?view=2d` to the address to stay in 2D, or `?view=3d` to force 3D.
 
 ```bash
 npm run build && npm run preview

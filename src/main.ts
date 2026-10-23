@@ -16,6 +16,8 @@ const app = required('#app');
 
 document.title = t('app.title');
 const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+/** How long the 2D spiral takes to draw itself in before it lifts into 3D. */
+const INTRO_2D_MS = 3000;
 
 const header = document.createElement('header');
 header.className = 'masthead';
@@ -99,11 +101,14 @@ async function show3d(intro = false): Promise<void> {
 
 draw2d(true);
 
-// Upgrade to 3D once the page is idle, if WebGL works (add ?view=2d to stay flat).
-const wants3d = new URLSearchParams(window.location.search).get('view') !== '2d';
-if (wants3d && webglAvailable()) {
-  bar.element.hidden = false;
+// Upgrade to 3D after the 2D spiral has drawn itself in, in idle time, if the browser draws WebGL
+// with real graphics hardware. (Even the check is slow where WebGL is drawn in software, so it must
+// not hold up the first paint.) ?view=2d stays flat; ?view=3d forces 3D even on software WebGL.
+const requested = new URLSearchParams(window.location.search).get('view');
+if (requested !== '2d') {
   const start = (): void => {
+    if (!webglAvailable(requested === '3d')) return;
+    bar.element.hidden = false;
     show3d(true).catch((error: unknown) => {
       console.warn('3D view unavailable, staying in 2D', error);
       show2d();
@@ -111,8 +116,11 @@ if (wants3d && webglAvailable()) {
   };
   // Older Safari has no requestIdleCallback.
   const win: Partial<Window> = window;
-  if (win.requestIdleCallback) win.requestIdleCallback(start, { timeout: 1500 });
-  else window.setTimeout(start, 300);
+  const whenIdle = (): void => {
+    if (win.requestIdleCallback) win.requestIdleCallback(start, { timeout: 1500 });
+    else start();
+  };
+  window.setTimeout(whenIdle, reducedMotion || requested === '3d' ? 0 : INTRO_2D_MS);
 }
 
 let timer: number | undefined;
