@@ -1,5 +1,4 @@
-import type { Point3 } from '../geometry/vortex';
-import type { World } from './world';
+import type { Point3 } from '../geometry/helix';
 
 /** Camera maths for the 3D view: orbit positions, framing, presets and fly-to. Pure functions. */
 
@@ -93,18 +92,18 @@ export function framePose(
 
 /** Viewing directions of the three named views: Home (3D), Top (the flat map), Side (the timeline). */
 const VIEWS: Record<ViewName, { azimuth: number; elevation: number }> = {
-  home: { azimuth: -18, elevation: 36 },
+  // Like the poster: a gentle tilt shows the corkscrew hanging down to the Big Bang.
+  home: { azimuth: -15, elevation: 34 },
   // Not exactly 90°: orbit controls need a tiny tilt to know which way is "up" on screen.
   top: { azimuth: 0, elevation: 89.9 },
   // A slight tilt: exactly side-on, the flat ribbons would shrink to thin lines.
   side: { azimuth: 0, elevation: 12 },
 };
 
-export function presetPose(view: ViewName, world: World, frame: Frame): CameraPose {
+/** Frames `outline` (points along the corkscrew) from one of the named views. */
+export function presetPose(view: ViewName, outline: Point3[], frame: Frame): CameraPose {
   const { azimuth, elevation } = VIEWS[view];
-  // On a tall screen the lens sits above the main vortex; looking down more steeply opens it up.
-  const tilt = view === 'home' && !world.landscape ? 12 : 0;
-  return framePose(world.outline, azimuth, elevation + tilt, frame);
+  return framePose(outline, azimuth, elevation, frame);
 }
 
 /**

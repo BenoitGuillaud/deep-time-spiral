@@ -26,6 +26,12 @@ export const LENS_EVENTS: EventMarker[] = [
   { id: 'first-people', art: 'people', ring: '#ffd166' },
 ];
 
+/** Every event with a picture, newest first (one spiral, so one list). */
+export const EVENTS: EventMarker[] = [
+  ...LENS_EVENTS.slice().reverse(),
+  ...MAIN_EVENTS.slice().reverse(),
+];
+
 /** Not an ICS colour: the time before the Earth existed. */
 export const COSMOS_COLOR = '#3b2f8f';
 

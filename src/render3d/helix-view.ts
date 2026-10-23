@@ -5,9 +5,7 @@ import {
   BufferGeometry,
   CanvasTexture,
   Color,
-  CylinderGeometry,
   DirectionalLight,
-  DoubleSide,
   Group,
   HemisphereLight,
   Line,
@@ -23,7 +21,6 @@ import {
   Sprite,
   SpriteMaterial,
   SRGBColorSpace,
-  TorusGeometry,
   Vector3,
   WebGLRenderer,
   type Material,
@@ -31,23 +28,14 @@ import {
 } from 'three';
 import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
 import { CSS2DObject, CSS2DRenderer } from 'three/addons/renderers/CSS2DRenderer.js';
-import { event as findEvent, resolveAge, unitsOfRank } from '../data';
-import { evenSpiralPoint, linearMapping } from '../geometry/spiral';
-import { vortexPoint, type Point3 } from '../geometry/vortex';
+import { event as findEvent, resolveAge } from '../data';
+import { CORKSCREW, createHelixPath, type HelixPath, type Point3 } from '../geometry/helix';
 import { t } from '../i18n/i18n';
-import {
-  COSMOS_COLOR,
-  eventLabel,
-  eventName,
-  LENS_EVENTS,
-  MAIN_EVENTS,
-  timeSpans,
-  zoomFactor,
-  type EventMarker,
-} from '../render/events';
-import { formatAgo, formatSpanMillions } from '../render/format';
+import { COSMOS_COLOR, EVENTS, eventLabel, eventName, type EventMarker } from '../render/events';
+import { formatAgo } from '../render/format';
 import { drawBadge } from '../render/illustrations/icons';
 import { seeded } from '../render/seeded';
+import { spanBands, type Band } from '../render/span-colours';
 import {
   eventPose,
   fitDistance,
@@ -57,20 +45,17 @@ import {
   type Frame,
   type ViewName,
 } from './camera';
-import { ribbonArrays } from './ribbon-geometry';
-import { computeWorld, lensRing, placed, type Placement, type World } from './world';
+import { helixRibbon } from './helix-ribbon';
 
-/** The 3D vortex view (three.js). Loaded lazily, after the 2D view has painted. */
+/** The 3D corkscrew (three.js): one true-size spiral from Now down to the Big Bang. */
 
-export interface VortexViewOptions {
+export interface HelixViewOptions {
   /** Opens the event card once the camera has arrived. */
   onSelect: (marker: EventMarker) => void;
   reducedMotion: boolean;
-  /** Start looking straight down (like the 2D map) and lift into 3D. */
-  intro: boolean;
 }
 
-export interface VortexView {
+export interface HelixView {
   setView(view: ViewName): void;
   resize(): void;
   dispose(): void;
@@ -78,13 +63,13 @@ export interface VortexView {
 
 const FOV = 40;
 const FLIGHT_MS = 1100;
-const INTRO_MS = 2200;
 const IDLE_SPIN_MS = 10_000;
 /** Sticker size in px: smaller on phones, but the button (with its glow) stays over 48 px. */
 const stickerSize = (width: number, height: number): number =>
   Math.round(Math.min(60, Math.max(46, Math.min(width, height) * 0.12)));
 
 const vec = (p: Point3): Vector3 => new Vector3(p.x, p.y, p.z);
+const dist = (a: Point3, b: Point3): number => Math.hypot(a.x - b.x, a.y - b.y, a.z - b.z);
 
 function glowTexture(inner: string, outer: string): CanvasTexture {
   const size = 128;
@@ -127,6 +112,16 @@ function cosmosTexture(): CanvasTexture {
   return texture;
 }
 
+function points(positions: Float32Array, colors: Float32Array, size: number): Points {
+  const geometry = new BufferGeometry();
+  geometry.setAttribute('position', new BufferAttribute(positions, 3));
+  geometry.setAttribute('color', new BufferAttribute(colors, 3));
+  return new Points(
+    geometry,
+    new PointsMaterial({ size, vertexColors: true, transparent: true, opacity: 0.9 }),
+  );
+}
+
 function stars(): Points {
   const random = seeded(42);
   const count = 1800;
@@ -142,38 +137,42 @@ function stars(): Points {
     const b = 0.45 + random() * 0.55;
     colors.set([b, b, Math.min(1, b + 0.08)], i * 3);
   }
-  const geometry = new BufferGeometry();
-  geometry.setAttribute('position', new BufferAttribute(positions, 3));
-  geometry.setAttribute('color', new BufferAttribute(colors, 3));
-  return new Points(
-    geometry,
-    new PointsMaterial({ size: 0.14, vertexColors: true, transparent: true, opacity: 0.9 }),
-  );
+  return points(positions, colors, 0.14);
 }
 
-function ribbonMesh(
-  placement: Placement,
-  u0: number,
-  u1: number,
-  material: Material,
-  scale = 1,
-): Mesh {
-  const { width, thickness } = placement.ribbon;
-  const arrays = ribbonArrays(
-    placement.vortex,
-    u0,
-    u1,
-    width * scale,
-    thickness * (scale > 1 ? 0.4 : 1),
-  );
+/** Stardust floating around the coils before the Earth (decoration, not data). */
+function stardust(path: HelixPath, from: number): Points {
+  const random = seeded(11);
+  const count = 420;
+  const positions = new Float32Array(count * 3);
+  const colors = new Float32Array(count * 3);
+  for (let i = 0; i < count; i++) {
+    const f = from + random() * (1 - from);
+    const c = path.pointAt(f);
+    const a = path.across(f);
+    const spread = path.widthAt(f) * 1.6;
+    const side = (random() - 0.5) * spread;
+    positions.set(
+      [c.x + a.x * side, c.y + (random() - 0.3) * spread * 0.6, c.z + a.z * side],
+      i * 3,
+    );
+    const b = 0.7 + random() * 0.3;
+    colors.set([b, b * 0.92, 1], i * 3);
+  }
+  return points(positions, colors, 0.012);
+}
+
+function ribbonMesh(path: HelixPath, band: Band, material: Material, widthScale = 1): Mesh {
+  const arrays = helixRibbon(path, band.from, band.to, {
+    widthScale,
+    thickness: widthScale > 1 ? 0.06 : 0.2,
+  });
   const geometry = new BufferGeometry();
   geometry.setAttribute('position', new BufferAttribute(arrays.positions, 3));
   geometry.setAttribute('normal', new BufferAttribute(arrays.normals, 3));
   geometry.setAttribute('uv', new BufferAttribute(arrays.uvs, 2));
   geometry.setIndex(new BufferAttribute(arrays.indices, 1));
-  const mesh = new Mesh(geometry, material);
-  mesh.position.copy(vec(placement.origin));
-  return mesh;
+  return new Mesh(geometry, material);
 }
 
 // Lambert, not the heavier physically based shader: much quicker to compile on slow tablets, and
@@ -181,12 +180,6 @@ function ribbonMesh(
 function lit(color: string): MeshLambertMaterial {
   return new MeshLambertMaterial({ color, emissive: color, emissiveIntensity: 0.32 });
 }
-
-/** Lets the browser breathe between building steps, so no single task blocks a tap for long. */
-const breathe = (): Promise<void> =>
-  new Promise((resolve) => {
-    window.setTimeout(resolve, 0);
-  });
 
 function halo(color: string): MeshBasicMaterial {
   return new MeshBasicMaterial({
@@ -197,6 +190,12 @@ function halo(color: string): MeshBasicMaterial {
     depthWrite: false,
   });
 }
+
+/** Lets the browser breathe between building steps, so no single task blocks a tap for long. */
+const breathe = (): Promise<void> =>
+  new Promise((resolve) => {
+    window.setTimeout(resolve, 0);
+  });
 
 /** A label floating in the scene (HTML, so it stays crisp and readable). */
 function floatingText(className: string, text: string): CSS2DObject {
@@ -212,45 +211,44 @@ interface Target {
   pose: CameraPose;
 }
 
-/** Builds everything that depends on the layout; returns the fly-to targets. */
+interface Built {
+  /** Points along the corkscrew and the flags, for framing the camera. */
+  outline: Point3[];
+}
+
+/** Flags closer than this (world units) to an earlier one are raised so they don't overlap. */
+const FLAG_GAP = 0.34;
+const FLAG_BASE = 0.16;
+const FLAG_STEP = 0.22;
+
+/** Builds the corkscrew for a time span (years), with a flag for each event inside it. */
 async function buildContent(
   group: Group,
-  world: World,
+  path: HelixPath,
+  spanYears: number,
   badge: number,
   onPick: (target: Target) => void,
-): Promise<void> {
-  const spans = timeSpans();
-  const { main, lens } = world;
-  const mainMap = linearMapping(spans.main);
-  const lensMap = linearMapping(spans.lens);
+): Promise<Built> {
+  const bands = spanBands(spanYears);
 
-  // Main ribbon: the four eons in ICS colours, then the starry time before Earth.
-  const cosmos = new MeshLambertMaterial({
-    map: cosmosTexture(),
-    emissive: new Color(COSMOS_COLOR),
-    emissiveIntensity: 0.55,
-  });
-  for (const eon of unitsOfRank('eon')) {
-    const u0 = mainMap.toUnit(eon.end.ma * 1e6);
-    const u1 = mainMap.toUnit(eon.begin.ma * 1e6);
-    group.add(ribbonMesh(main, u0, u1, lit(eon.color)));
-    group.add(ribbonMesh(main, u0, u1, halo(eon.color), 1.9));
+  // The ribbon: one stretch per colour band, with a faint wider glow underneath.
+  for (const band of bands) {
+    const cosmos = band.unitId === null;
+    const material = cosmos
+      ? new MeshLambertMaterial({
+          map: cosmosTexture(),
+          emissive: new Color(COSMOS_COLOR),
+          emissiveIntensity: 0.55,
+        })
+      : lit(band.color);
+    group.add(ribbonMesh(path, band, material));
+    group.add(ribbonMesh(path, band, halo(cosmos ? '#6c5ce7' : band.color), 1.9));
   }
-  const earth = mainMap.toUnit(spans.earth);
-  group.add(ribbonMesh(main, earth, 1, cosmos));
-  group.add(ribbonMesh(main, earth, 1, halo('#6c5ce7'), 1.9));
+  const cosmos = bands.find((b) => b.unitId === null);
+  if (cosmos) group.add(stardust(path, cosmos.from));
   await breathe();
 
-  // Lens ribbon: the Phanerozoic by ICS period.
-  for (const period of unitsOfRank('period').filter((p) => p.begin.ma * 1e6 <= spans.lens)) {
-    const u0 = lensMap.toUnit(period.end.ma * 1e6);
-    const u1 = lensMap.toUnit(period.begin.ma * 1e6);
-    group.add(ribbonMesh(lens, u0, u1, lit(period.color)));
-    group.add(ribbonMesh(lens, u0, u1, halo(period.color), 1.9));
-  }
-  await breathe();
-
-  // Glows: Now on both summits, and the Big Bang at the bottom rim.
+  // Glows: Now at the start, the Big Bang at the bottom tip.
   const glow = (texture: CanvasTexture, at: Point3, size: number): void => {
     const sprite = new Sprite(
       new SpriteMaterial({ map: texture, blending: AdditiveBlending, depthWrite: false }),
@@ -259,84 +257,48 @@ async function buildContent(
     sprite.scale.set(size, size, 1);
     group.add(sprite);
   };
-  const now = glowTexture('rgba(255,230,160,1)', 'rgba(255,209,102,0.45)');
-  glow(now, main.origin, 0.32);
-  glow(now, lens.origin, 0.3);
-  glow(
-    glowTexture('rgba(255,250,230,1)', 'rgba(255,170,80,0.5)'),
-    placed(main, vortexPoint(1, main.vortex)),
-    0.9,
-  );
-
-  // Magnifier ring around the Phanerozoic on the main summit, and a light beam to the lens.
-  const uPhanerozoic = mainMap.toUnit(spans.lens);
-  const ringRadius = evenSpiralPoint(uPhanerozoic, main.vortex).r + main.ribbon.width / 2 + 0.04;
-  const ringY = main.origin.y - (main.vortex.depth * uPhanerozoic) / 2;
-  const glass = new MeshBasicMaterial({ color: '#ffffff', transparent: true, opacity: 0.8 });
-  const magnifier = new Mesh(new TorusGeometry(ringRadius, 0.008, 10, 96), glass);
-  magnifier.rotation.x = Math.PI / 2;
-  magnifier.position.set(main.origin.x, ringY, main.origin.z);
-  group.add(magnifier);
-  const { radius: lensRingRadius, y: lensRingY } = lensRing(lens);
-  const lensRim = new Mesh(new TorusGeometry(lensRingRadius, 0.012, 10, 128), glass);
-  lensRim.rotation.x = Math.PI / 2;
-  lensRim.position.set(lens.origin.x, lensRingY, lens.origin.z);
-  group.add(lensRim);
-  const from = new Vector3(main.origin.x, ringY, main.origin.z);
-  const to = new Vector3(lens.origin.x, lensRingY, lens.origin.z);
-  const beam = new Mesh(
-    new CylinderGeometry(lensRingRadius, ringRadius, from.distanceTo(to), 48, 1, true),
-    new MeshBasicMaterial({
-      color: '#ffffff',
-      transparent: true,
-      opacity: 0.018,
-      side: DoubleSide,
-      blending: AdditiveBlending,
-      depthWrite: false,
-    }),
-  );
-  beam.position.copy(from.clone().add(to).multiplyScalar(0.5));
-  beam.quaternion.setFromUnitVectors(new Vector3(0, 1, 0), to.clone().sub(from).normalize());
-  group.add(beam);
-
-  // Floating labels: honest zoom factor and the lens span on the lens rim (the badge at the back,
-  // above it on screen; the caption at the front, below it), and "you are here".
-  const zoom = String(Math.max(2, Math.round(zoomFactor(main.vortex, lens.vortex))));
-  const pill = floatingText('pill3d pill3d-zoom', t('lens.title', { zoom }));
-  pill.position.set(lens.origin.x, lens.origin.y + 0.12, lens.origin.z - lensRingRadius);
-  group.add(pill);
-  const caption = floatingText(
-    'pill3d',
-    t('lens.caption', { span: formatSpanMillions(spans.lens) }),
-  );
-  caption.position.set(lens.origin.x, lensRingY - 0.08, lens.origin.z + lensRingRadius + 0.08);
-  group.add(caption);
+  const now = path.pointAt(0);
+  glow(glowTexture('rgba(255,230,160,1)', 'rgba(255,209,102,0.45)'), now, 0.34);
+  glow(glowTexture('rgba(255,250,230,1)', 'rgba(255,170,80,0.5)'), path.pointAt(1), 0.75);
   const you = floatingText('you-label3d', t('spiral.you'));
-  you.position.set(lens.origin.x - 0.1, lens.origin.y + 0.16, lens.origin.z);
+  // Just above the Now glow, a little to the left of the people's flag.
+  you.position.set(now.x - 0.14, now.y + 0.06, now.z + 0.04);
   group.add(you);
 
-  // Event stickers: real HTML buttons at the exact spot of each event.
-  const sticker = (
-    marker: EventMarker,
-    placement: Placement,
-    u: number,
-    distance: number,
-    offset?: Point3,
-  ): void => {
-    const exact = placed(placement, vortexPoint(u, placement.vortex));
-    exact.y += placement.ribbon.thickness / 2;
-    const at = offset
-      ? { x: exact.x + offset.x, y: exact.y + offset.y, z: exact.z + offset.z }
-      : exact;
-    if (offset) {
-      // A pointer from the badge to the exact spot, for events too close to now to see.
-      const line = new Line(
-        new BufferGeometry().setFromPoints([vec(exact), vec(at)]),
-        new LineBasicMaterial({ color: marker.ring }),
-      );
-      group.add(line);
+  // Event flags: a pole on the exact spot, the picture on top. Neighbours step up so they never
+  // overlap; the Big Bang's flag hangs down from the tip.
+  const outline: Point3[] = Array.from({ length: 201 }, (_, i) => path.pointAt(i / 200));
+  const flags: { foot: Point3; height: number }[] = [];
+  for (const marker of EVENTS) {
+    const years = resolveAge(findEvent(marker.id)).years;
+    if (years > spanYears) continue;
+    const f = years / spanYears;
+    const centre = path.pointAt(f);
+    const foot = { ...centre, y: centre.y + path.widthAt(f) * 0.1 };
+    const down = marker.id === 'big-bang';
+    let height = FLAG_BASE;
+    while (
+      flags.some(
+        (other) => dist(other.foot, foot) < FLAG_GAP && Math.abs(other.height - height) < FLAG_STEP,
+      )
+    ) {
+      height += FLAG_STEP;
     }
-    const target: Target = { marker, pose: eventPose(at, placement.origin, distance) };
+    flags.push({ foot, height });
+    const top = { ...foot, y: foot.y + (down ? -height : height) };
+    outline.push(top);
+    group.add(
+      new Line(
+        new BufferGeometry().setFromPoints([vec(foot), vec(top)]),
+        new LineBasicMaterial({ color: marker.ring, transparent: true, opacity: 0.85 }),
+      ),
+    );
+
+    const radius = Math.hypot(centre.x, centre.z);
+    const target: Target = {
+      marker,
+      pose: eventPose(top, { x: 0, y: top.y, z: 0 }, 0.5 + 0.9 * radius),
+    };
     const wrap = document.createElement('div');
     wrap.className = 'sticker';
     const button = document.createElement('button');
@@ -363,17 +325,11 @@ async function buildContent(
     label.textContent = eventLabel(marker.id);
     wrap.append(button, label);
     const object = new CSS2DObject(wrap);
-    object.position.copy(vec(at));
+    object.position.copy(vec(top));
     group.add(object);
-  };
-  for (const marker of MAIN_EVENTS) {
-    sticker(marker, main, mainMap.toUnit(resolveAge(findEvent(marker.id)).years), 2.4);
   }
-  for (const marker of LENS_EVENTS) {
-    const u = lensMap.toUnit(resolveAge(findEvent(marker.id)).years);
-    const offset = marker.id === 'first-people' ? { x: 0.62, y: 0.18, z: 0.12 } : undefined;
-    sticker(marker, lens, u, marker.id === 'first-people' ? 1.6 : 2, offset);
-  }
+  await breathe();
+  return { outline };
 }
 
 /** Frees the GPU memory held by everything under `root` (geometries, materials, textures). */
@@ -395,11 +351,11 @@ function disposeTree(root: Object3D): void {
   });
 }
 
-/** Mounts the 3D vortex into `container` (which must be visible, so it has a size). */
-export async function mountVortexView(
+/** Mounts the 3D corkscrew into `container` (which must be visible, so it has a size). */
+export async function mountHelixView(
   container: HTMLElement,
-  options: VortexViewOptions,
-): Promise<VortexView> {
+  options: HelixViewOptions,
+): Promise<HelixView> {
   const { reducedMotion } = options;
   const size = (): { width: number; height: number; aspect: number } => {
     const width = Math.max(1, container.clientWidth);
@@ -409,7 +365,7 @@ export async function mountVortexView(
   let { width, height, aspect } = size();
 
   const renderer = new WebGLRenderer({ antialias: true, powerPreference: 'high-performance' });
-  // 1.5× is sharp enough for the glowing ribbons and much lighter for tablets than 2× or 3×.
+  // 1.5× is sharp enough for the glowing ribbon and much lighter for tablets than 2× or 3×.
   renderer.setPixelRatio(Math.min(window.devicePixelRatio, 1.5));
   renderer.setSize(width, height);
   renderer.domElement.setAttribute('aria-hidden', 'true');
@@ -425,8 +381,7 @@ export async function mountVortexView(
   const sun = new DirectionalLight('#ffffff', 1.6);
   sun.position.set(3, 6, 4);
   scene.add(sun);
-  const sky = stars();
-  scene.add(sky);
+  scene.add(stars());
 
   const camera = new PerspectiveCamera(FOV, aspect, 0.01, 200);
   const controls = new OrbitControls(camera, renderer.domElement);
@@ -434,11 +389,14 @@ export async function mountVortexView(
   controls.dampingFactor = 0.08;
   controls.rotateSpeed = 0.7;
   controls.screenSpacePanning = true;
-  controls.minDistance = 0.3;
-  controls.maxPolarAngle = Math.PI * 0.62;
+  controls.minDistance = 0.25;
+  controls.maxPolarAngle = Math.PI * 0.75;
   controls.autoRotateSpeed = 0.35;
 
-  let world = computeWorld(aspect);
+  const path = createHelixPath(CORKSCREW);
+  // M2 shows the whole story, Now → Big Bang. (The Zoom Ladder, M3, will change this span.)
+  const spanYears = resolveAge(findEvent('big-bang')).years;
+  let outline: Point3[] = [];
   const cameraFrame = (): Frame => {
     const sticker = stickerSize(width, height) * 0.7;
     return {
@@ -478,11 +436,11 @@ export async function mountVortexView(
     renderer.render(scene, camera);
     labels.render(scene, camera);
   };
-  const frame = (now: number): void => {
+  const frame = (nowMs: number): void => {
     raf = 0;
     let active = false;
     if (flight) {
-      const progress = (now - flight.start) / flight.ms;
+      const progress = (nowMs - flight.start) / flight.ms;
       setPose(flightPose(flight.from, flight.to, progress));
       if (progress >= 1) {
         const done = flight.done;
@@ -534,17 +492,24 @@ export async function mountVortexView(
     disposeTree(content);
     const next = new Group();
     content = next;
-    await buildContent(next, world, stickerSize(width, height), ({ marker, pose }) => {
-      flyTo(pose, marker.id, FLIGHT_MS, () => {
-        options.onSelect(marker);
-      });
-    });
+    const built = await buildContent(
+      next,
+      path,
+      spanYears,
+      stickerSize(width, height),
+      ({ marker, pose }) => {
+        flyTo(pose, marker.id, FLIGHT_MS, () => {
+          options.onSelect(marker);
+        });
+      },
+    );
     if (id !== builds) {
       disposeTree(next);
       return;
     }
+    outline = built.outline;
     scene.add(next);
-    controls.maxDistance = fitDistance(world.bounds.radius, FOV, aspect) * 2.2;
+    controls.maxDistance = fitDistance(CORKSCREW.topRadius + CORKSCREW.depth, FOV, aspect) * 2.4;
     // Compile the shaders in the background where the browser can, instead of at the first draw.
     await renderer.compileAsync(scene, camera);
   };
@@ -566,20 +531,13 @@ export async function mountVortexView(
   controls.addEventListener('change', requestRender);
 
   await build();
-  const home = presetPose('home', world, cameraFrame());
-  if (options.intro && !reducedMotion) {
-    setPose(presetPose('top', world, cameraFrame()));
-    report('top');
-    flyTo(home, 'home', INTRO_MS);
-  } else {
-    setPose(home);
-    report('home');
-    requestRender();
-  }
+  setPose(presetPose('home', outline, cameraFrame()));
+  report('home');
+  requestRender();
 
   return {
     setView(view) {
-      flyTo(presetPose(view, world, cameraFrame()), view, FLIGHT_MS);
+      flyTo(presetPose(view, outline, cameraFrame()), view, FLIGHT_MS);
     },
     resize() {
       ({ width, height, aspect } = size());
@@ -587,16 +545,6 @@ export async function mountVortexView(
       labels.setSize(width, height);
       camera.aspect = aspect;
       camera.updateProjectionMatrix();
-      const next = computeWorld(aspect);
-      if (next.landscape !== world.landscape) {
-        // Portrait ↔ landscape: the lens moves, so rebuild and go home.
-        world = next;
-        void build().then(() => {
-          setPose(presetPose('home', world, cameraFrame()));
-          report('home');
-          requestRender();
-        });
-      }
       requestRender();
     },
     dispose() {

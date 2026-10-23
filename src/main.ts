@@ -1,7 +1,7 @@
 import './styles.css';
 import { t } from './i18n/i18n';
 import { renderScene } from './render/scene';
-import type { VortexView } from './render3d/vortex-view';
+import type { HelixView } from './render3d/helix-view';
 import { webglAvailable } from './render3d/support';
 import { createCard } from './ui/card';
 import { createViewBar } from './ui/view-bar';
@@ -44,7 +44,7 @@ credits.rel = 'noopener';
 credits.textContent = t('app.credits');
 
 const openCard = createCard(document.body);
-let view3d: VortexView | null = null;
+let view3d: HelixView | null = null;
 const bar = createViewBar({
   onView: (view) => view3d?.setView(view),
   onToggle: () => {
@@ -76,17 +76,17 @@ function show2d(): void {
   bar.setMode('2d');
 }
 
-async function show3d(intro = false): Promise<void> {
+async function show3d(): Promise<void> {
   stage3d.hidden = false;
   if (view3d) {
     view3d.resize();
   } else {
-    const { mountVortexView } = await import('./render3d/vortex-view');
-    view3d = await mountVortexView(stage3d, { onSelect: openCard, reducedMotion, intro });
+    const { mountHelixView } = await import('./render3d/helix-view');
+    view3d = await mountHelixView(stage3d, { onSelect: openCard, reducedMotion });
   }
-  // Cross-fade: the flat map stays visible underneath while the 3D view fades in, looking straight
-  // down at the same map, then lifts into 3D. Measuring the layer first makes the browser apply
-  // the starting opacity, so the fade runs without waiting for an animation frame.
+  // Cross-fade: the 2D corkscrew stays visible underneath while the 3D one fades in on top.
+  // Measuring the layer first makes the browser apply the starting opacity, so the fade runs
+  // without waiting for an animation frame.
   stage3d.getBoundingClientRect();
   stage3d.classList.add('shown');
   window.setTimeout(
@@ -109,7 +109,7 @@ if (requested !== '2d') {
   const start = (): void => {
     if (!webglAvailable(requested === '3d')) return;
     bar.element.hidden = false;
-    show3d(true).catch((error: unknown) => {
+    show3d().catch((error: unknown) => {
       console.warn('3D view unavailable, staying in 2D', error);
       show2d();
     });
