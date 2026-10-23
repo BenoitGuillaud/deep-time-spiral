@@ -26,6 +26,7 @@ npm run check                          # typecheck, lint, format check, unit tes
 npx playwright install chromium webkit # once, before the first e2e run
 npm run test:e2e                       # Playwright: Chromium + WebKit, tablet + phone
 npm run format                         # fix formatting
+npm run data:ics                       # regenerate src/data/ics-units.json from data/ics/chart.ttl
 ```
 
 Every pull request runs the same checks in GitHub Actions, plus Lighthouse on mobile (accessibility ≥ 95,

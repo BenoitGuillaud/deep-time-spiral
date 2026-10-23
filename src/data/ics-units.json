@@ -1,0 +1,1882 @@
+{
+  "chart": {
+    "version": "v2026/06",
+    "source": "https://github.com/i-c-stratigraphy/chart/blob/v2026-06.5/chart.ttl",
+    "commit": "44d1043ecf295cce1be03b3fc5fa95ca65fe770b",
+    "sha256": "0158959e8fdae2a8bdbb14ca3e424d2370362cd8dfc8af86e7be73c74368b355",
+    "license": "CC BY 4.0, © International Commission on Stratigraphy, 2026"
+  },
+  "units": [
+    {
+      "id": "Holocene",
+      "rank": "epoch",
+      "parent": "Quaternary",
+      "order": 4,
+      "notation": "Q2",
+      "color": "#FEEBD2",
+      "begin": {
+        "ma": 0.0117,
+        "text": "0.0117",
+        "plusMinus": null,
+        "uncertain": false
+      },
+      "end": {
+        "ma": 0,
+        "text": "0",
+        "plusMinus": null,
+        "uncertain": false
+      },
+      "labels": {
+        "en": "Holocene",
+        "fr": "Holocène",
+        "de": "Holozän",
+        "hu": "holocén"
+      }
+    },
+    {
+      "id": "Pleistocene",
+      "rank": "epoch",
+      "parent": "Quaternary",
+      "order": 9,
+      "notation": "Q1",
+      "color": "#FFEFAF",
+      "begin": {
+        "ma": 2.58,
+        "text": "2.58",
+        "plusMinus": null,
+        "uncertain": false
+      },
+      "end": {
+        "ma": 0.0117,
+        "text": "0.0117",
+        "plusMinus": null,
+        "uncertain": false
+      },
+      "labels": {
+        "en": "Pleistocene",
+        "fr": "Pléistocène",
+        "de": "Pleistozän",
+        "hu": "pleisztocén"
+      }
+    },
+    {
+      "id": "Quaternary",
+      "rank": "period",
+      "parent": "Cenozoic",
+      "order": 10,
+      "notation": "Q",
+      "color": "#F9F97F",
+      "begin": {
+        "ma": 2.58,
+        "text": "2.58",
+        "plusMinus": null,
+        "uncertain": false
+      },
+      "end": {
+        "ma": 0,
+        "text": "0",
+        "plusMinus": null,
+        "uncertain": false
+      },
+      "labels": {
+        "en": "Quaternary",
+        "fr": "Quaternaire",
+        "de": "Quartär",
+        "hu": "kvarter"
+      }
+    },
+    {
+      "id": "Pliocene",
+      "rank": "epoch",
+      "parent": "Neogene",
+      "order": 12,
+      "notation": "N2",
+      "color": "#FFFF99",
+      "begin": {
+        "ma": 5.333,
+        "text": "5.333",
+        "plusMinus": null,
+        "uncertain": false
+      },
+      "end": {
+        "ma": 2.58,
+        "text": "2.58",
+        "plusMinus": null,
+        "uncertain": false
+      },
+      "labels": {
+        "en": "Pliocene",
+        "fr": "Pliocène",
+        "de": "Pliozän",
+        "hu": "pliocén"
+      }
+    },
+    {
+      "id": "Miocene",
+      "rank": "epoch",
+      "parent": "Neogene",
+      "order": 20,
+      "notation": "N1",
+      "color": "#FFFF00",
+      "begin": {
+        "ma": 23.04,
+        "text": "23.04",
+        "plusMinus": null,
+        "uncertain": false
+      },
+      "end": {
+        "ma": 5.333,
+        "text": "5.333",
+        "plusMinus": null,
+        "uncertain": false
+      },
+      "labels": {
+        "en": "Miocene",
+        "fr": "Miocène",
+        "de": "Miozän",
+        "hu": "miocén"
+      }
+    },
+    {
+      "id": "Neogene",
+      "rank": "period",
+      "parent": "Cenozoic",
+      "order": 21,
+      "notation": "N",
+      "color": "#FFE619",
+      "begin": {
+        "ma": 23.04,
+        "text": "23.04",
+        "plusMinus": null,
+        "uncertain": false
+      },
+      "end": {
+        "ma": 2.58,
+        "text": "2.58",
+        "plusMinus": null,
+        "uncertain": false
+      },
+      "labels": {
+        "en": "Neogene",
+        "fr": "Néogène",
+        "de": "Neogen",
+        "hu": "neogén"
+      }
+    },
+    {
+      "id": "Oligocene",
+      "rank": "epoch",
+      "parent": "Paleogene",
+      "order": 23,
+      "notation": "E3",
+      "color": "#FEC07A",
+      "begin": {
+        "ma": 33.9,
+        "text": "33.9",
+        "plusMinus": null,
+        "uncertain": false
+      },
+      "end": {
+        "ma": 23.04,
+        "text": "23.04",
+        "plusMinus": null,
+        "uncertain": false
+      },
+      "labels": {
+        "en": "Oligocene",
+        "fr": "Oligocène",
+        "de": "Oligozän",
+        "hu": "oligocén"
+      }
+    },
+    {
+      "id": "Eocene",
+      "rank": "epoch",
+      "parent": "Paleogene",
+      "order": 28,
+      "notation": "E2",
+      "color": "#FDB46C",
+      "begin": {
+        "ma": 56,
+        "text": "56.00",
+        "plusMinus": null,
+        "uncertain": false
+      },
+      "end": {
+        "ma": 33.9,
+        "text": "33.9",
+        "plusMinus": null,
+        "uncertain": false
+      },
+      "labels": {
+        "en": "Eocene",
+        "fr": "Éocène",
+        "de": "Eozän",
+        "hu": "eocén"
+      }
+    },
+    {
+      "id": "Cenozoic",
+      "rank": "era",
+      "parent": "Phanerozoic",
+      "order": 32,
+      "notation": "CZ",
+      "color": "#F2F91D",
+      "begin": {
+        "ma": 66,
+        "text": "66.00",
+        "plusMinus": null,
+        "uncertain": false
+      },
+      "end": {
+        "ma": 0,
+        "text": "0",
+        "plusMinus": null,
+        "uncertain": false
+      },
+      "labels": {
+        "en": "Cenozoic",
+        "fr": "Cénozoïque",
+        "de": "Känozoikum",
+        "hu": "kainozoikum"
+      }
+    },
+    {
+      "id": "Paleocene",
+      "rank": "epoch",
+      "parent": "Paleogene",
+      "order": 34,
+      "notation": "E1",
+      "color": "#FDA75F",
+      "begin": {
+        "ma": 66,
+        "text": "66.00",
+        "plusMinus": null,
+        "uncertain": false
+      },
+      "end": {
+        "ma": 56,
+        "text": "56.00",
+        "plusMinus": null,
+        "uncertain": false
+      },
+      "labels": {
+        "en": "Paleocene",
+        "fr": "Paléocène",
+        "de": "Paläozän",
+        "hu": "paleocén"
+      }
+    },
+    {
+      "id": "Paleogene",
+      "rank": "period",
+      "parent": "Cenozoic",
+      "order": 35,
+      "notation": "E",
+      "color": "#FD9A52",
+      "begin": {
+        "ma": 66,
+        "text": "66.00",
+        "plusMinus": null,
+        "uncertain": false
+      },
+      "end": {
+        "ma": 23.04,
+        "text": "23.04",
+        "plusMinus": null,
+        "uncertain": false
+      },
+      "labels": {
+        "en": "Paleogene",
+        "fr": "Paléogène",
+        "de": "Paläogen",
+        "hu": "paleogén"
+      }
+    },
+    {
+      "id": "UpperCretaceous",
+      "rank": "epoch",
+      "parent": "Cretaceous",
+      "order": 42,
+      "notation": "K2",
+      "color": "#A6D84A",
+      "begin": {
+        "ma": 100.5,
+        "text": "100.5",
+        "plusMinus": 0.1,
+        "uncertain": false
+      },
+      "end": {
+        "ma": 66,
+        "text": "66.00",
+        "plusMinus": null,
+        "uncertain": false
+      },
+      "labels": null
+    },
+    {
+      "id": "Cretaceous",
+      "rank": "period",
+      "parent": "Mesozoic",
+      "order": 49,
+      "notation": "K",
+      "color": "#7FC64E",
+      "begin": {
+        "ma": 143.1,
+        "text": "143.1",
+        "plusMinus": 0.6,
+        "uncertain": false
+      },
+      "end": {
+        "ma": 66,
+        "text": "66.00",
+        "plusMinus": null,
+        "uncertain": false
+      },
+      "labels": {
+        "en": "Cretaceous",
+        "fr": "Crétacé",
+        "de": "Kreide",
+        "hu": "kréta"
+      }
+    },
+    {
+      "id": "LowerCretaceous",
+      "rank": "epoch",
+      "parent": "Cretaceous",
+      "order": 50,
+      "notation": "K1",
+      "color": "#8CCD57",
+      "begin": {
+        "ma": 143.1,
+        "text": "143.1",
+        "plusMinus": 0.6,
+        "uncertain": false
+      },
+      "end": {
+        "ma": 100.5,
+        "text": "100.5",
+        "plusMinus": 0.1,
+        "uncertain": false
+      },
+      "labels": null
+    },
+    {
+      "id": "UpperJurassic",
+      "rank": "epoch",
+      "parent": "Jurassic",
+      "order": 54,
+      "notation": "J3",
+      "color": "#B3E3EE",
+      "begin": {
+        "ma": 161.5,
+        "text": "161.5",
+        "plusMinus": 1,
+        "uncertain": false
+      },
+      "end": {
+        "ma": 143.1,
+        "text": "143.1",
+        "plusMinus": 0.6,
+        "uncertain": false
+      },
+      "labels": null
+    },
+    {
+      "id": "MiddleJurassic",
+      "rank": "epoch",
+      "parent": "Jurassic",
+      "order": 59,
+      "notation": "J2",
+      "color": "#80CFD8",
+      "begin": {
+        "ma": 174.7,
+        "text": "174.7",
+        "plusMinus": 0.8,
+        "uncertain": false
+      },
+      "end": {
+        "ma": 161.5,
+        "text": "161.5",
+        "plusMinus": 1,
+        "uncertain": false
+      },
+      "labels": null
+    },
+    {
+      "id": "Jurassic",
+      "rank": "period",
+      "parent": "Mesozoic",
+      "order": 64,
+      "notation": "J",
+      "color": "#34B2C9",
+      "begin": {
+        "ma": 201.4,
+        "text": "201.4",
+        "plusMinus": 0.2,
+        "uncertain": false
+      },
+      "end": {
+        "ma": 143.1,
+        "text": "143.1",
+        "plusMinus": 0.6,
+        "uncertain": false
+      },
+      "labels": {
+        "en": "Jurassic",
+        "fr": "Jurassique",
+        "de": "Jura",
+        "hu": "jura"
+      }
+    },
+    {
+      "id": "LowerJurassic",
+      "rank": "epoch",
+      "parent": "Jurassic",
+      "order": 65,
+      "notation": "J1",
+      "color": "#42AED0",
+      "begin": {
+        "ma": 201.4,
+        "text": "201.4",
+        "plusMinus": 0.2,
+        "uncertain": false
+      },
+      "end": {
+        "ma": 174.7,
+        "text": "174.7",
+        "plusMinus": 0.8,
+        "uncertain": false
+      },
+      "labels": null
+    },
+    {
+      "id": "UpperTriassic",
+      "rank": "epoch",
+      "parent": "Triassic",
+      "order": 69,
+      "notation": "T3",
+      "color": "#BD8CC3",
+      "begin": {
+        "ma": 237,
+        "text": "237",
+        "plusMinus": null,
+        "uncertain": true
+      },
+      "end": {
+        "ma": 201.4,
+        "text": "201.4",
+        "plusMinus": 0.2,
+        "uncertain": false
+      },
+      "labels": null
+    },
+    {
+      "id": "MiddleTriassic",
+      "rank": "epoch",
+      "parent": "Triassic",
+      "order": 72,
+      "notation": "T2",
+      "color": "#B168B1",
+      "begin": {
+        "ma": 247,
+        "text": "247.0",
+        "plusMinus": null,
+        "uncertain": false
+      },
+      "end": {
+        "ma": 237,
+        "text": "237",
+        "plusMinus": null,
+        "uncertain": true
+      },
+      "labels": null
+    },
+    {
+      "id": "LowerTriassic",
+      "rank": "epoch",
+      "parent": "Triassic",
+      "order": 75,
+      "notation": "T1",
+      "color": "#983999",
+      "begin": {
+        "ma": 251.902,
+        "text": "251.902",
+        "plusMinus": 0.024,
+        "uncertain": false
+      },
+      "end": {
+        "ma": 247,
+        "text": "247.0",
+        "plusMinus": null,
+        "uncertain": false
+      },
+      "labels": null
+    },
+    {
+      "id": "Mesozoic",
+      "rank": "era",
+      "parent": "Phanerozoic",
+      "order": 76,
+      "notation": "MZ",
+      "color": "#67C5CA",
+      "begin": {
+        "ma": 251.902,
+        "text": "251.902",
+        "plusMinus": 0.024,
+        "uncertain": false
+      },
+      "end": {
+        "ma": 66,
+        "text": "66.00",
+        "plusMinus": null,
+        "uncertain": false
+      },
+      "labels": {
+        "en": "Mesozoic",
+        "fr": "Mésozoïque",
+        "de": "Mesozoikum",
+        "hu": "mezozoikum"
+      }
+    },
+    {
+      "id": "Paleozoic",
+      "rank": "era",
+      "parent": "Phanerozoic",
+      "order": 77,
+      "notation": "PZ",
+      "color": "#99C08D",
+      "begin": {
+        "ma": 538.8,
+        "text": "538.8",
+        "plusMinus": 0.6,
+        "uncertain": false
+      },
+      "end": {
+        "ma": 251.902,
+        "text": "251.902",
+        "plusMinus": 0.024,
+        "uncertain": false
+      },
+      "labels": {
+        "en": "Paleozoic",
+        "fr": "Paléozoïque",
+        "de": "Paläozoikum",
+        "hu": "paleozoikum"
+      }
+    },
+    {
+      "id": "Triassic",
+      "rank": "period",
+      "parent": "Mesozoic",
+      "order": 78,
+      "notation": "T",
+      "color": "#812B92",
+      "begin": {
+        "ma": 251.902,
+        "text": "251.902",
+        "plusMinus": 0.024,
+        "uncertain": false
+      },
+      "end": {
+        "ma": 201.4,
+        "text": "201.4",
+        "plusMinus": 0.2,
+        "uncertain": false
+      },
+      "labels": {
+        "en": "Triassic",
+        "fr": "Trias",
+        "de": "Trias",
+        "hu": "triász"
+      }
+    },
+    {
+      "id": "Lopingian",
+      "rank": "epoch",
+      "parent": "Permian",
+      "order": 80,
+      "notation": "P3",
+      "color": "#FBA794",
+      "begin": {
+        "ma": 259.857,
+        "text": "259.857",
+        "plusMinus": 0.084,
+        "uncertain": false
+      },
+      "end": {
+        "ma": 251.902,
+        "text": "251.902",
+        "plusMinus": 0.024,
+        "uncertain": false
+      },
+      "labels": {
+        "en": "Lopingian",
+        "fr": "Lopingien",
+        "de": "Lopingium",
+        "hu": "lopingi"
+      }
+    },
+    {
+      "id": "Guadalupian",
+      "rank": "epoch",
+      "parent": "Permian",
+      "order": 84,
+      "notation": "P2",
+      "color": "#FB745C",
+      "begin": {
+        "ma": 274.4,
+        "text": "274.4",
+        "plusMinus": 0.4,
+        "uncertain": false
+      },
+      "end": {
+        "ma": 259.857,
+        "text": "259.857",
+        "plusMinus": 0.084,
+        "uncertain": false
+      },
+      "labels": {
+        "en": "Guadalupian",
+        "fr": "Guadalupien",
+        "de": "Guadalupium",
+        "hu": "guadalupi"
+      }
+    },
+    {
+      "id": "Cisuralian",
+      "rank": "epoch",
+      "parent": "Permian",
+      "order": 90,
+      "notation": "P1",
+      "color": "#EF5845",
+      "begin": {
+        "ma": 298.9,
+        "text": "298.9",
+        "plusMinus": 0.15,
+        "uncertain": false
+      },
+      "end": {
+        "ma": 274.4,
+        "text": "274.4",
+        "plusMinus": 0.4,
+        "uncertain": false
+      },
+      "labels": {
+        "en": "Cisuralian",
+        "fr": "Cisuralien",
+        "de": "Cisuralium",
+        "hu": "ciszuráli"
+      }
+    },
+    {
+      "id": "Permian",
+      "rank": "period",
+      "parent": "Paleozoic",
+      "order": 91,
+      "notation": "P",
+      "color": "#F04028",
+      "begin": {
+        "ma": 298.9,
+        "text": "298.9",
+        "plusMinus": 0.15,
+        "uncertain": false
+      },
+      "end": {
+        "ma": 251.902,
+        "text": "251.902",
+        "plusMinus": 0.024,
+        "uncertain": false
+      },
+      "labels": {
+        "en": "Permian",
+        "fr": "Permien",
+        "de": "Perm",
+        "hu": "perm"
+      }
+    },
+    {
+      "id": "UpperPennsylvanian",
+      "rank": "epoch",
+      "parent": "Pennsylvanian",
+      "order": 94,
+      "notation": "C2c6c7",
+      "color": "#BFD0BA",
+      "begin": {
+        "ma": 307,
+        "text": "307.0",
+        "plusMinus": 0.1,
+        "uncertain": false
+      },
+      "end": {
+        "ma": 298.9,
+        "text": "298.9",
+        "plusMinus": 0.15,
+        "uncertain": false
+      },
+      "labels": null
+    },
+    {
+      "id": "MiddlePennsylvanian",
+      "rank": "epoch",
+      "parent": "Pennsylvanian",
+      "order": 95,
+      "notation": "C2c5",
+      "color": "#A6C7B7",
+      "begin": {
+        "ma": 315.2,
+        "text": "315.2",
+        "plusMinus": 0.2,
+        "uncertain": false
+      },
+      "end": {
+        "ma": 307,
+        "text": "307.0",
+        "plusMinus": 0.1,
+        "uncertain": false
+      },
+      "labels": null
+    },
+    {
+      "id": "LowerPennsylvanian",
+      "rank": "epoch",
+      "parent": "Pennsylvanian",
+      "order": 98,
+      "notation": "C2c4",
+      "color": "#8CBEB4",
+      "begin": {
+        "ma": 323.4,
+        "text": "323.4",
+        "plusMinus": 0.4,
+        "uncertain": false
+      },
+      "end": {
+        "ma": 315.2,
+        "text": "315.2",
+        "plusMinus": 0.2,
+        "uncertain": false
+      },
+      "labels": null
+    },
+    {
+      "id": "Pennsylvanian",
+      "rank": "sub-period",
+      "parent": "Carboniferous",
+      "order": 99,
+      "notation": "C2",
+      "color": "#7EBCC6",
+      "begin": {
+        "ma": 323.4,
+        "text": "323.4",
+        "plusMinus": 0.4,
+        "uncertain": false
+      },
+      "end": {
+        "ma": 298.9,
+        "text": "298.9",
+        "plusMinus": 0.15,
+        "uncertain": false
+      },
+      "labels": {
+        "en": "Pennsylvanian",
+        "fr": "Pennsylvanie",
+        "de": "Pennsylvanium",
+        "hu": "pennsylvaniai"
+      }
+    },
+    {
+      "id": "UpperMississippian",
+      "rank": "epoch",
+      "parent": "Mississippian",
+      "order": 101,
+      "notation": "C1c3",
+      "color": "#B3BE6C",
+      "begin": {
+        "ma": 330.3,
+        "text": "330.3",
+        "plusMinus": 0.4,
+        "uncertain": false
+      },
+      "end": {
+        "ma": 323.4,
+        "text": "323.4",
+        "plusMinus": 0.4,
+        "uncertain": false
+      },
+      "labels": null
+    },
+    {
+      "id": "MiddleMississippian",
+      "rank": "epoch",
+      "parent": "Mississippian",
+      "order": 102,
+      "notation": "C1c2",
+      "color": "#99B46C",
+      "begin": {
+        "ma": 346.7,
+        "text": "346.7",
+        "plusMinus": 0.4,
+        "uncertain": false
+      },
+      "end": {
+        "ma": 330.3,
+        "text": "330.3",
+        "plusMinus": 0.4,
+        "uncertain": false
+      },
+      "labels": null
+    },
+    {
+      "id": "Carboniferous",
+      "rank": "period",
+      "parent": "Paleozoic",
+      "order": 104,
+      "notation": "C",
+      "color": "#67A599",
+      "begin": {
+        "ma": 358.86,
+        "text": "358.86",
+        "plusMinus": 0.19,
+        "uncertain": false
+      },
+      "end": {
+        "ma": 298.9,
+        "text": "298.9",
+        "plusMinus": 0.15,
+        "uncertain": false
+      },
+      "labels": {
+        "en": "Carboniferous",
+        "fr": "Carbonifère",
+        "de": "Karbon",
+        "hu": "karbon"
+      }
+    },
+    {
+      "id": "LowerMississippian",
+      "rank": "epoch",
+      "parent": "Mississippian",
+      "order": 105,
+      "notation": "C1c1",
+      "color": "#80AB6C",
+      "begin": {
+        "ma": 358.86,
+        "text": "358.86",
+        "plusMinus": 0.19,
+        "uncertain": false
+      },
+      "end": {
+        "ma": 346.7,
+        "text": "346.7",
+        "plusMinus": 0.4,
+        "uncertain": false
+      },
+      "labels": null
+    },
+    {
+      "id": "Mississippian",
+      "rank": "sub-period",
+      "parent": "Carboniferous",
+      "order": 106,
+      "notation": "C1",
+      "color": "#678F66",
+      "begin": {
+        "ma": 358.86,
+        "text": "358.86",
+        "plusMinus": 0.19,
+        "uncertain": false
+      },
+      "end": {
+        "ma": 323.4,
+        "text": "323.4",
+        "plusMinus": 0.4,
+        "uncertain": false
+      },
+      "labels": {
+        "en": "Mississippian",
+        "fr": "Mississippien",
+        "de": "Mississippium",
+        "hu": "mississippi"
+      }
+    },
+    {
+      "id": "UpperDevonian",
+      "rank": "epoch",
+      "parent": "Devonian",
+      "order": 110,
+      "notation": "D3",
+      "color": "#F1E19D",
+      "begin": {
+        "ma": 382.31,
+        "text": "382.31",
+        "plusMinus": 1.36,
+        "uncertain": false
+      },
+      "end": {
+        "ma": 358.86,
+        "text": "358.86",
+        "plusMinus": 0.19,
+        "uncertain": false
+      },
+      "labels": null
+    },
+    {
+      "id": "MiddleDevonian",
+      "rank": "epoch",
+      "parent": "Devonian",
+      "order": 113,
+      "notation": "D2",
+      "color": "#F1C868",
+      "begin": {
+        "ma": 393.47,
+        "text": "393.47",
+        "plusMinus": 0.99,
+        "uncertain": false
+      },
+      "end": {
+        "ma": 382.31,
+        "text": "382.31",
+        "plusMinus": 1.36,
+        "uncertain": false
+      },
+      "labels": null
+    },
+    {
+      "id": "Devonian",
+      "rank": "period",
+      "parent": "Paleozoic",
+      "order": 116,
+      "notation": "D",
+      "color": "#CB8C37",
+      "begin": {
+        "ma": 419.62,
+        "text": "419.62",
+        "plusMinus": 1.36,
+        "uncertain": false
+      },
+      "end": {
+        "ma": 358.86,
+        "text": "358.86",
+        "plusMinus": 0.19,
+        "uncertain": false
+      },
+      "labels": {
+        "en": "Devonian",
+        "fr": "Dévonien",
+        "de": "Devon",
+        "hu": "devon"
+      }
+    },
+    {
+      "id": "LowerDevonian",
+      "rank": "epoch",
+      "parent": "Devonian",
+      "order": 118,
+      "notation": "D1",
+      "color": "#E5AC4D",
+      "begin": {
+        "ma": 419.62,
+        "text": "419.62",
+        "plusMinus": 1.36,
+        "uncertain": false
+      },
+      "end": {
+        "ma": 393.47,
+        "text": "393.47",
+        "plusMinus": 0.99,
+        "uncertain": false
+      },
+      "labels": null
+    },
+    {
+      "id": "Ludlow",
+      "rank": "epoch",
+      "parent": "Silurian",
+      "order": 122,
+      "notation": "S3",
+      "color": "#BFE6CF",
+      "begin": {
+        "ma": 426.7,
+        "text": "426.7",
+        "plusMinus": 1.5,
+        "uncertain": false
+      },
+      "end": {
+        "ma": 419.62,
+        "text": "419.62",
+        "plusMinus": 1.36,
+        "uncertain": false
+      },
+      "labels": {
+        "en": "Ludlow",
+        "fr": "Ludlow",
+        "de": "Ludlow",
+        "hu": "ludlowi"
+      }
+    },
+    {
+      "id": "Wenlock",
+      "rank": "epoch",
+      "parent": "Silurian",
+      "order": 125,
+      "notation": "S2",
+      "color": "#B3E1C2",
+      "begin": {
+        "ma": 432.9,
+        "text": "432.9",
+        "plusMinus": 1.2,
+        "uncertain": false
+      },
+      "end": {
+        "ma": 426.7,
+        "text": "426.7",
+        "plusMinus": 1.5,
+        "uncertain": false
+      },
+      "labels": {
+        "en": "Wenlock",
+        "fr": "Wenlock",
+        "de": "Wenlock",
+        "hu": "wenlocki"
+      }
+    },
+    {
+      "id": "Llandovery",
+      "rank": "epoch",
+      "parent": "Silurian",
+      "order": 128,
+      "notation": "S1",
+      "color": "#99D7B3",
+      "begin": {
+        "ma": 443.1,
+        "text": "443.1",
+        "plusMinus": 1,
+        "uncertain": false
+      },
+      "end": {
+        "ma": 432.9,
+        "text": "432.9",
+        "plusMinus": 1.2,
+        "uncertain": false
+      },
+      "labels": {
+        "en": "Llandovery",
+        "fr": "Llandovery",
+        "de": "Llandovery",
+        "hu": "llandoveryi"
+      }
+    },
+    {
+      "id": "Silurian",
+      "rank": "period",
+      "parent": "Paleozoic",
+      "order": 130,
+      "notation": "S",
+      "color": "#B3E1B6",
+      "begin": {
+        "ma": 443.1,
+        "text": "443.1",
+        "plusMinus": 1,
+        "uncertain": false
+      },
+      "end": {
+        "ma": 419.62,
+        "text": "419.62",
+        "plusMinus": 1.36,
+        "uncertain": false
+      },
+      "labels": {
+        "en": "Silurian",
+        "fr": "Silurien",
+        "de": "Silur",
+        "hu": "szilur"
+      }
+    },
+    {
+      "id": "UpperOrdovician",
+      "rank": "epoch",
+      "parent": "Ordovician",
+      "order": 134,
+      "notation": "O3",
+      "color": "#7FCA93",
+      "begin": {
+        "ma": 458.2,
+        "text": "458.2",
+        "plusMinus": 0.7,
+        "uncertain": false
+      },
+      "end": {
+        "ma": 443.1,
+        "text": "443.1",
+        "plusMinus": 1,
+        "uncertain": false
+      },
+      "labels": null
+    },
+    {
+      "id": "MiddleOrdovician",
+      "rank": "epoch",
+      "parent": "Ordovician",
+      "order": 137,
+      "notation": "O2",
+      "color": "#4DB47E",
+      "begin": {
+        "ma": 471.3,
+        "text": "471.3",
+        "plusMinus": 1.4,
+        "uncertain": false
+      },
+      "end": {
+        "ma": 458.2,
+        "text": "458.2",
+        "plusMinus": 0.7,
+        "uncertain": false
+      },
+      "labels": null
+    },
+    {
+      "id": "LowerOrdovician",
+      "rank": "epoch",
+      "parent": "Ordovician",
+      "order": 139,
+      "notation": "O1",
+      "color": "#1A9D6F",
+      "begin": {
+        "ma": 486.85,
+        "text": "486.85",
+        "plusMinus": 1.5,
+        "uncertain": false
+      },
+      "end": {
+        "ma": 471.3,
+        "text": "471.3",
+        "plusMinus": 1.4,
+        "uncertain": false
+      },
+      "labels": null
+    },
+    {
+      "id": "Ordovician",
+      "rank": "period",
+      "parent": "Paleozoic",
+      "order": 140,
+      "notation": "O",
+      "color": "#009270",
+      "begin": {
+        "ma": 486.85,
+        "text": "486.85",
+        "plusMinus": 1.5,
+        "uncertain": false
+      },
+      "end": {
+        "ma": 443.1,
+        "text": "443.1",
+        "plusMinus": 1,
+        "uncertain": false
+      },
+      "labels": {
+        "en": "Ordovician",
+        "fr": "Ordovicien",
+        "de": "Ordovizium",
+        "hu": "ordovícium"
+      }
+    },
+    {
+      "id": "Furongian",
+      "rank": "epoch",
+      "parent": "Cambrian",
+      "order": 144,
+      "notation": "Ep4",
+      "color": "#B3E095",
+      "begin": {
+        "ma": 497,
+        "text": "497.0",
+        "plusMinus": null,
+        "uncertain": true
+      },
+      "end": {
+        "ma": 486.85,
+        "text": "486.85",
+        "plusMinus": 1.5,
+        "uncertain": false
+      },
+      "labels": {
+        "en": "Furongian",
+        "fr": "Furongien",
+        "de": "Furongium",
+        "hu": "furongi"
+      }
+    },
+    {
+      "id": "Miaolingian",
+      "rank": "epoch",
+      "parent": "Cambrian",
+      "order": 148,
+      "notation": "Ep3",
+      "color": "#A6CF86",
+      "begin": {
+        "ma": 506.5,
+        "text": "506.5",
+        "plusMinus": null,
+        "uncertain": true
+      },
+      "end": {
+        "ma": 497,
+        "text": "497.0",
+        "plusMinus": null,
+        "uncertain": true
+      },
+      "labels": {
+        "en": "Miaolingian",
+        "fr": "Miaolingien",
+        "de": "Serie 3",
+        "hu": "miaolingi"
+      }
+    },
+    {
+      "id": "CambrianSeries2",
+      "rank": "epoch",
+      "parent": "Cambrian",
+      "order": 151,
+      "notation": "Ep2",
+      "color": "#99C078",
+      "begin": {
+        "ma": 521,
+        "text": "521.0",
+        "plusMinus": null,
+        "uncertain": true
+      },
+      "end": {
+        "ma": 506.5,
+        "text": "506.5",
+        "plusMinus": null,
+        "uncertain": true
+      },
+      "labels": null
+    },
+    {
+      "id": "Cambrian",
+      "rank": "period",
+      "parent": "Paleozoic",
+      "order": 154,
+      "notation": "Ep",
+      "color": "#7FA056",
+      "begin": {
+        "ma": 538.8,
+        "text": "538.8",
+        "plusMinus": 0.6,
+        "uncertain": false
+      },
+      "end": {
+        "ma": 486.85,
+        "text": "486.85",
+        "plusMinus": 1.5,
+        "uncertain": false
+      },
+      "labels": {
+        "en": "Cambrian",
+        "fr": "Cambrien",
+        "de": "Kambrium",
+        "hu": "kambrium"
+      }
+    },
+    {
+      "id": "Phanerozoic",
+      "rank": "eon",
+      "parent": null,
+      "order": 156,
+      "notation": "PH",
+      "color": "#9AD9DD",
+      "begin": {
+        "ma": 538.8,
+        "text": "538.8",
+        "plusMinus": 0.6,
+        "uncertain": false
+      },
+      "end": {
+        "ma": 0,
+        "text": "0",
+        "plusMinus": null,
+        "uncertain": false
+      },
+      "labels": {
+        "en": "Phanerozoic",
+        "fr": "Phanérozoïque",
+        "de": "Phanerozoikum",
+        "hu": "fanerozoikum"
+      }
+    },
+    {
+      "id": "Terreneuvian",
+      "rank": "epoch",
+      "parent": "Cambrian",
+      "order": 157,
+      "notation": "Ep1",
+      "color": "#8CB06C",
+      "begin": {
+        "ma": 538.8,
+        "text": "538.8",
+        "plusMinus": 0.6,
+        "uncertain": false
+      },
+      "end": {
+        "ma": 521,
+        "text": "521.0",
+        "plusMinus": null,
+        "uncertain": true
+      },
+      "labels": {
+        "en": "Terreneuvian",
+        "fr": "Terreneuvien",
+        "de": "Terreneuvium",
+        "hu": "terreneuvi"
+      }
+    },
+    {
+      "id": "Ediacaran",
+      "rank": "period",
+      "parent": "Neoproterozoic",
+      "order": 158,
+      "notation": "NP3",
+      "color": "#FED96A",
+      "begin": {
+        "ma": 635,
+        "text": "635",
+        "plusMinus": null,
+        "uncertain": true
+      },
+      "end": {
+        "ma": 538.8,
+        "text": "538.8",
+        "plusMinus": 0.6,
+        "uncertain": false
+      },
+      "labels": {
+        "en": "Ediacaran",
+        "fr": "Édiacarien",
+        "de": "Ediacarium",
+        "hu": "ediacarai"
+      }
+    },
+    {
+      "id": "Cryogenian",
+      "rank": "period",
+      "parent": "Neoproterozoic",
+      "order": 159,
+      "notation": "NP2",
+      "color": "#FECC5C",
+      "begin": {
+        "ma": 720,
+        "text": "720",
+        "plusMinus": null,
+        "uncertain": true
+      },
+      "end": {
+        "ma": 635,
+        "text": "635",
+        "plusMinus": null,
+        "uncertain": true
+      },
+      "labels": {
+        "en": "Cryogenian",
+        "fr": "Cryogénien",
+        "de": "Cryogenium",
+        "hu": "kriogéni"
+      }
+    },
+    {
+      "id": "Neoproterozoic",
+      "rank": "era",
+      "parent": "Proterozoic",
+      "order": 160,
+      "notation": "NP",
+      "color": "#FEB342",
+      "begin": {
+        "ma": 1000,
+        "text": "1000",
+        "plusMinus": null,
+        "uncertain": false
+      },
+      "end": {
+        "ma": 538.8,
+        "text": "538.8",
+        "plusMinus": 0.6,
+        "uncertain": false
+      },
+      "labels": {
+        "en": "Neoproterozoic",
+        "fr": "Néoprotérozoïque",
+        "de": "Neoproterozoikum",
+        "hu": "neoproterozoikum"
+      }
+    },
+    {
+      "id": "Tonian",
+      "rank": "period",
+      "parent": "Neoproterozoic",
+      "order": 161,
+      "notation": "NP1",
+      "color": "#FEBF4E",
+      "begin": {
+        "ma": 1000,
+        "text": "1000",
+        "plusMinus": null,
+        "uncertain": false
+      },
+      "end": {
+        "ma": 720,
+        "text": "720",
+        "plusMinus": null,
+        "uncertain": true
+      },
+      "labels": {
+        "en": "Tonian",
+        "fr": "Tonien",
+        "de": "Tonium",
+        "hu": "toni"
+      }
+    },
+    {
+      "id": "Stenian",
+      "rank": "period",
+      "parent": "Mesoproterozoic",
+      "order": 162,
+      "notation": "MP3",
+      "color": "#FED99A",
+      "begin": {
+        "ma": 1200,
+        "text": "1200",
+        "plusMinus": null,
+        "uncertain": false
+      },
+      "end": {
+        "ma": 1000,
+        "text": "1000",
+        "plusMinus": null,
+        "uncertain": false
+      },
+      "labels": {
+        "en": "Stenian",
+        "fr": "Sténien",
+        "de": "Stenium",
+        "hu": "steni"
+      }
+    },
+    {
+      "id": "Ectasian",
+      "rank": "period",
+      "parent": "Mesoproterozoic",
+      "order": 163,
+      "notation": "MP2",
+      "color": "#FDCC8A",
+      "begin": {
+        "ma": 1400,
+        "text": "1400",
+        "plusMinus": null,
+        "uncertain": false
+      },
+      "end": {
+        "ma": 1200,
+        "text": "1200",
+        "plusMinus": null,
+        "uncertain": false
+      },
+      "labels": {
+        "en": "Ectasian",
+        "fr": "Ectasien",
+        "de": "Ectasium",
+        "hu": "ectasi"
+      }
+    },
+    {
+      "id": "Calymmian",
+      "rank": "period",
+      "parent": "Mesoproterozoic",
+      "order": 164,
+      "notation": "MP1",
+      "color": "#FDC07A",
+      "begin": {
+        "ma": 1600,
+        "text": "1600",
+        "plusMinus": null,
+        "uncertain": false
+      },
+      "end": {
+        "ma": 1400,
+        "text": "1400",
+        "plusMinus": null,
+        "uncertain": false
+      },
+      "labels": {
+        "en": "Calymmian",
+        "fr": "Calymmien",
+        "de": "Calymmium",
+        "hu": "calymmi"
+      }
+    },
+    {
+      "id": "Mesoproterozoic",
+      "rank": "era",
+      "parent": "Proterozoic",
+      "order": 165,
+      "notation": "MP",
+      "color": "#FDB462",
+      "begin": {
+        "ma": 1600,
+        "text": "1600",
+        "plusMinus": null,
+        "uncertain": false
+      },
+      "end": {
+        "ma": 1000,
+        "text": "1000",
+        "plusMinus": null,
+        "uncertain": false
+      },
+      "labels": {
+        "en": "Mesoproterozoic",
+        "fr": "Mésoprotérozoïque",
+        "de": "Mesoproterozoikum",
+        "hu": "mezoproterozoikum"
+      }
+    },
+    {
+      "id": "Statherian",
+      "rank": "period",
+      "parent": "Paleoproterozoic",
+      "order": 166,
+      "notation": "PP4",
+      "color": "#F875A7",
+      "begin": {
+        "ma": 1800,
+        "text": "1800",
+        "plusMinus": null,
+        "uncertain": false
+      },
+      "end": {
+        "ma": 1600,
+        "text": "1600",
+        "plusMinus": null,
+        "uncertain": false
+      },
+      "labels": {
+        "en": "Statherian",
+        "fr": "Stathérien",
+        "de": "Statherium",
+        "hu": "statheri"
+      }
+    },
+    {
+      "id": "Orosirian",
+      "rank": "period",
+      "parent": "Paleoproterozoic",
+      "order": 167,
+      "notation": "PP3",
+      "color": "#F76898",
+      "begin": {
+        "ma": 2050,
+        "text": "2050",
+        "plusMinus": null,
+        "uncertain": false
+      },
+      "end": {
+        "ma": 1800,
+        "text": "1800",
+        "plusMinus": null,
+        "uncertain": false
+      },
+      "labels": {
+        "en": "Orosirian",
+        "fr": "Orosirien",
+        "de": "Orosirium",
+        "hu": "orosiri"
+      }
+    },
+    {
+      "id": "Rhyacian",
+      "rank": "period",
+      "parent": "Paleoproterozoic",
+      "order": 168,
+      "notation": "PP2",
+      "color": "#F75B89",
+      "begin": {
+        "ma": 2300,
+        "text": "2300",
+        "plusMinus": null,
+        "uncertain": false
+      },
+      "end": {
+        "ma": 2050,
+        "text": "2050",
+        "plusMinus": null,
+        "uncertain": false
+      },
+      "labels": {
+        "en": "Rhyacian",
+        "fr": "Rhyacien",
+        "de": "Rhyacium",
+        "hu": "rhyaci"
+      }
+    },
+    {
+      "id": "Paleoproterozoic",
+      "rank": "era",
+      "parent": "Proterozoic",
+      "order": 169,
+      "notation": "PP",
+      "color": "#F74370",
+      "begin": {
+        "ma": 2500,
+        "text": "2500",
+        "plusMinus": null,
+        "uncertain": false
+      },
+      "end": {
+        "ma": 1600,
+        "text": "1600",
+        "plusMinus": null,
+        "uncertain": false
+      },
+      "labels": {
+        "en": "Paleoproterozoic",
+        "fr": "Paléoprotérozoïque",
+        "de": "Paläoproterozoikum",
+        "hu": "paleoproterozoikum"
+      }
+    },
+    {
+      "id": "Proterozoic",
+      "rank": "eon",
+      "parent": "Precambrian",
+      "order": 170,
+      "notation": "PR",
+      "color": "#F73563",
+      "begin": {
+        "ma": 2500,
+        "text": "2500",
+        "plusMinus": null,
+        "uncertain": false
+      },
+      "end": {
+        "ma": 538.8,
+        "text": "538.8",
+        "plusMinus": 0.6,
+        "uncertain": false
+      },
+      "labels": {
+        "en": "Proterozoic",
+        "fr": "Protéozoïque",
+        "de": "Proterozoikum",
+        "hu": "proterozoikum"
+      }
+    },
+    {
+      "id": "Siderian",
+      "rank": "period",
+      "parent": "Paleoproterozoic",
+      "order": 171,
+      "notation": "PP1",
+      "color": "#F74F7C",
+      "begin": {
+        "ma": 2500,
+        "text": "2500",
+        "plusMinus": null,
+        "uncertain": false
+      },
+      "end": {
+        "ma": 2300,
+        "text": "2300",
+        "plusMinus": null,
+        "uncertain": false
+      },
+      "labels": {
+        "en": "Siderian",
+        "fr": "Sidérien",
+        "de": "Siderium",
+        "hu": "sideri"
+      }
+    },
+    {
+      "id": "Neoarchean",
+      "rank": "era",
+      "parent": "Archean",
+      "order": 172,
+      "notation": "NA",
+      "color": "#F99BC1",
+      "begin": {
+        "ma": 2800,
+        "text": "2800",
+        "plusMinus": null,
+        "uncertain": false
+      },
+      "end": {
+        "ma": 2500,
+        "text": "2500",
+        "plusMinus": null,
+        "uncertain": false
+      },
+      "labels": {
+        "en": "Neoarchean",
+        "fr": "Néoarchéen",
+        "de": "Neoarchaikum",
+        "hu": "neoarchaikum"
+      }
+    },
+    {
+      "id": "Mesoarchean",
+      "rank": "era",
+      "parent": "Archean",
+      "order": 173,
+      "notation": "MA",
+      "color": "#F768A9",
+      "begin": {
+        "ma": 3200,
+        "text": "3200",
+        "plusMinus": null,
+        "uncertain": false
+      },
+      "end": {
+        "ma": 2800,
+        "text": "2800",
+        "plusMinus": null,
+        "uncertain": false
+      },
+      "labels": {
+        "en": "Mesoarchean",
+        "fr": "Mésoarchéen",
+        "de": "Mesoarchaikum",
+        "hu": "mezoarchaikum"
+      }
+    },
+    {
+      "id": "Paleoarchean",
+      "rank": "era",
+      "parent": "Archean",
+      "order": 174,
+      "notation": "PA",
+      "color": "#F4449F",
+      "begin": {
+        "ma": 3600,
+        "text": "3600",
+        "plusMinus": null,
+        "uncertain": false
+      },
+      "end": {
+        "ma": 3200,
+        "text": "3200",
+        "plusMinus": null,
+        "uncertain": false
+      },
+      "labels": {
+        "en": "Paleoarchean",
+        "fr": "Paléoarchéen",
+        "de": "Paläoarchaikum",
+        "hu": "paleoarchaikum"
+      }
+    },
+    {
+      "id": "Archean",
+      "rank": "eon",
+      "parent": "Precambrian",
+      "order": 175,
+      "notation": "AR",
+      "color": "#F0047F",
+      "begin": {
+        "ma": 4031,
+        "text": "4031",
+        "plusMinus": 3,
+        "uncertain": false
+      },
+      "end": {
+        "ma": 2500,
+        "text": "2500",
+        "plusMinus": null,
+        "uncertain": false
+      },
+      "labels": {
+        "en": "Archean",
+        "fr": "Archéen",
+        "de": "Archaikum",
+        "hu": "archaikum"
+      }
+    },
+    {
+      "id": "Eoarchean",
+      "rank": "era",
+      "parent": "Archean",
+      "order": 176,
+      "notation": "EA",
+      "color": "#DA037F",
+      "begin": {
+        "ma": 4031,
+        "text": "4031",
+        "plusMinus": 3,
+        "uncertain": false
+      },
+      "end": {
+        "ma": 3600,
+        "text": "3600",
+        "plusMinus": null,
+        "uncertain": false
+      },
+      "labels": {
+        "en": "Eoarchean",
+        "fr": "Éoarchéen",
+        "de": "Eoarchaikum",
+        "hu": "eoarchaikum"
+      }
+    },
+    {
+      "id": "Hadean",
+      "rank": "eon",
+      "parent": "Precambrian",
+      "order": 177,
+      "notation": "HA",
+      "color": "#AE027E",
+      "begin": {
+        "ma": 4567,
+        "text": "4567",
+        "plusMinus": null,
+        "uncertain": false
+      },
+      "end": {
+        "ma": 4031,
+        "text": "4031",
+        "plusMinus": 3,
+        "uncertain": false
+      },
+      "labels": {
+        "en": "Hadean",
+        "fr": "Hadéen",
+        "de": "Hadaikum",
+        "hu": "hadeikum"
+      }
+    },
+    {
+      "id": "Precambrian",
+      "rank": "super-eon",
+      "parent": null,
+      "order": 178,
+      "notation": "PE",
+      "color": "#F74370",
+      "begin": {
+        "ma": 4567,
+        "text": "4567",
+        "plusMinus": null,
+        "uncertain": false
+      },
+      "end": {
+        "ma": 538.8,
+        "text": "538.8",
+        "plusMinus": 0.6,
+        "uncertain": false
+      },
+      "labels": {
+        "en": "Precambrian",
+        "fr": "Précambrien",
+        "de": "Präkambrium",
+        "hu": "prekambrium"
+      }
+    }
+  ]
+}

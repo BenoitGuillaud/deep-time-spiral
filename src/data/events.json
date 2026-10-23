@@ -1,0 +1,104 @@
+[
+  {
+    "id": "big-bang",
+    "age": {
+      "kind": "cited",
+      "years": 13787000000,
+      "plusMinusYears": 20000000,
+      "qualifier": "about",
+      "source": {
+        "citation": "Planck Collaboration: Aghanim, N., Akrami, Y., Ashdown, M., et al. (2020). Planck 2018 results. VI. Cosmological parameters. Astronomy & Astrophysics, 641, A6.",
+        "url": "https://doi.org/10.1051/0004-6361/201833910",
+        "detail": "Table 2, combined TT,TE,EE+lowE+lensing+BAO column: age of the Universe 13.787 ± 0.020 Gyr.",
+        "accessed": "2026-10-22"
+      }
+    }
+  },
+  {
+    "id": "solar-system",
+    "age": {
+      "kind": "cited",
+      "years": 4567300000,
+      "plusMinusYears": 160000,
+      "qualifier": "about",
+      "source": {
+        "citation": "Connelly, J. N., Bizzarro, M., Krot, A. N., Nordlund, Å., Wielandt, D., & Ivanova, M. A. (2012). The absolute chronology and thermal processing of solids in the solar protoplanetary disk. Science, 338(6107), 651–655.",
+        "url": "https://doi.org/10.1126/science.1226919",
+        "detail": "Abstract: the solar system's first solids (CAIs) formed 4567.30 ± 0.16 million years ago.",
+        "accessed": "2026-10-22"
+      }
+    }
+  },
+  {
+    "id": "earth",
+    "age": {
+      "kind": "cited",
+      "years": 4540000000,
+      "plusMinusYears": null,
+      "qualifier": "about",
+      "source": {
+        "citation": "Dalrymple, G. B. (2001). The age of the Earth in the twentieth century: a problem (mostly) solved. Geological Society, London, Special Publications, 190, 205–221.",
+        "url": "https://doi.org/10.1144/GSL.SP.2001.190.01.14",
+        "detail": "Abstract: 4.54 Ga is the value for the age of the Earth in wide use today (Tera, 1980).",
+        "accessed": "2026-10-22"
+      }
+    }
+  },
+  {
+    "id": "first-life",
+    "age": {
+      "kind": "cited",
+      "years": 3480000000,
+      "plusMinusYears": null,
+      "qualifier": "at-least",
+      "source": {
+        "citation": "Djokic, T., Van Kranendonk, M. J., Campbell, K. A., Walter, M. R., & Ward, C. R. (2017). Earliest signs of life on land preserved in ca. 3.5 Ga hot spring deposits. Nature Communications, 8, 15263.",
+        "url": "https://doi.org/10.1038/ncomms15263",
+        "detail": "Abstract: the ca. 3.48 Ga Dresser Formation hosts some of Earth's earliest convincing evidence of life (stromatolites, microfossils). Life is at least this old.",
+        "accessed": "2026-10-22"
+      }
+    }
+  },
+  {
+    "id": "animals-with-shells",
+    "age": { "kind": "ics", "unit": "Cambrian", "boundary": "begin" }
+  },
+  {
+    "id": "first-dinosaurs",
+    "age": {
+      "kind": "cited",
+      "years": 230000000,
+      "plusMinusYears": null,
+      "qualifier": "about",
+      "source": {
+        "citation": "Martinez, R. N., Sereno, P. C., Alcober, O. A., Colombi, C. E., Renne, P. R., Montañez, I. P., & Currie, B. S. (2011). A basal dinosaur from the dawn of the dinosaur era in southwestern Pangaea. Science, 331(6014), 206–210.",
+        "url": "https://doi.org/10.1126/science.1198467",
+        "detail": "Summary: two hundred thirty million years ago, in what is now Argentina, dinosaurs were the dominant carnivores or small herbivores.",
+        "accessed": "2026-10-22"
+      }
+    }
+  },
+  {
+    "id": "last-dinosaurs",
+    "age": { "kind": "ics", "unit": "Cretaceous", "boundary": "end" }
+  },
+  {
+    "id": "first-people",
+    "age": {
+      "kind": "cited",
+      "years": 315000,
+      "plusMinusYears": 34000,
+      "qualifier": "about",
+      "source": {
+        "citation": "Richter, D., Grün, R., Joannes-Boyau, R., Steele, T. E., Amani, F., Rué, M., Fernandes, P., Raynal, J.-P., Geraads, D., Ben-Ncer, A., Hublin, J.-J., & McPherron, S. P. (2017). The age of the hominin fossils from Jebel Irhoud, Morocco, and the origins of the Middle Stone Age. Nature, 546(7657), 293–296.",
+        "url": "https://doi.org/10.1038/nature22335",
+        "detail": "Abstract: the oldest reported Homo sapiens remains date to 315 ± 34 thousand years ago.",
+        "accessed": "2026-10-22"
+      }
+    }
+  },
+  {
+    "id": "ice-age-ends",
+    "age": { "kind": "ics", "unit": "Holocene", "boundary": "begin" }
+  }
+]
