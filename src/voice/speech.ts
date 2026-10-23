@@ -66,11 +66,11 @@ export function pickVoice<V extends VoiceInfo>(voices: readonly V[], locale: Loc
 
 /**
  * Splits text into sentences (some browsers cut long utterances short), only where a full stop is
- * followed by a space: "13.8 billion" stays in one piece.
+ * followed by a space, and not after a single capital: "13.8 billion" and "T. rex" stay whole.
  */
 export function sentences(text: string): string[] {
   return text
-    .split(/(?<=[.!?…])\s+/)
+    .split(/(?<=[.!?…])(?<!\b\p{Lu}\.)\s+/u)
     .map((s) => s.trim())
     .filter((s) => s.length > 0);
 }

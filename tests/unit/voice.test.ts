@@ -61,6 +61,13 @@ describe('sentences', () => {
       'Our universe begins!',
     ]);
   });
+
+  it('keeps abbreviations like "T. rex" in one sentence', () => {
+    expect(sentences('People, T. rex, First dinosaurs. All fit!')).toEqual([
+      'People, T. rex, First dinosaurs.',
+      'All fit!',
+    ]);
+  });
 });
 
 describe('the journey clock', () => {
