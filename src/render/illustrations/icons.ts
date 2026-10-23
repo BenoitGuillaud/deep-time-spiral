@@ -10,7 +10,8 @@ export type IllustrationKind =
   | 'trilobite'
   | 'herrerasaurus'
   | 'tyrannosaurus'
-  | 'people';
+  | 'people'
+  | 'zoom';
 
 type Group = Selection<SVGGElement, unknown, null, undefined>;
 
@@ -128,6 +129,32 @@ function people(g: Group): void {
   person(g, 20, 14, 0.8, '#ffe8b0');
 }
 
+/** A magnifying glass with a tiny person and T. rex inside: "zoom in to see them". */
+function zoom(g: Group): void {
+  g.append('line')
+    .attr('x1', 18)
+    .attr('y1', 18)
+    .attr('x2', 42)
+    .attr('y2', 42)
+    .attr('stroke', '#ffd166')
+    .attr('stroke-width', 10)
+    .attr('stroke-linecap', 'round');
+  g.append('circle')
+    .attr('cx', -6)
+    .attr('cy', -6)
+    .attr('r', 34)
+    .attr('fill', '#1b2a4a')
+    .attr('stroke', '#ffd166')
+    .attr('stroke-width', 6);
+  const inside = g.append('g').attr('transform', 'translate(-6,-6) scale(0.42)');
+  person(inside, -36, 22, 0.9, '#ffe8b0');
+  silhouette(
+    inside.append('g').attr('transform', 'translate(22,0)'),
+    SILHOUETTES.tyrannosaurus,
+    '#ffb3a8',
+  );
+}
+
 function silhouette(g: Group, s: Silhouette, color: string, flip = false): void {
   const fit = 84 / Math.max(s.width, s.height);
   const sx = flip ? -fit : fit;
@@ -163,6 +190,9 @@ export function drawIllustration(g: Group, kind: IllustrationKind, size: number)
       break;
     case 'tyrannosaurus':
       silhouette(art, SILHOUETTES.tyrannosaurus, '#ffb3a8');
+      break;
+    case 'zoom':
+      zoom(art);
       break;
     case 'people':
       people(art);

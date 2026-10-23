@@ -129,3 +129,70 @@ export function flightPose(from: CameraPose, to: CameraPose, t: number): CameraP
   const e = easeInOutCubic(t);
   return { position: lerp(from.position, to.position, e), target: lerp(from.target, to.target, e) };
 }
+
+export interface Projected {
+  /** Screen pixels from the left. */
+  x: number;
+  /** Screen pixels from the top. */
+  y: number;
+  /** Distance in front of the camera (bigger = further away). */
+  depth: number;
+}
+
+/**
+ * Projects world points to screen pixels for a camera pose, exactly as a three.js perspective camera
+ * looking at `pose.target` with "up" pointing up. The 2D view uses it to draw what the 3D camera
+ * would show, so the two line up.
+ */
+export function projector(
+  pose: CameraPose,
+  fovDeg: number,
+  width: number,
+  height: number,
+): (p: Point3) => Projected {
+  const { position: eye, target } = pose;
+  const fl = Math.hypot(target.x - eye.x, target.y - eye.y, target.z - eye.z) || 1;
+  const forward = {
+    x: (target.x - eye.x) / fl,
+    y: (target.y - eye.y) / fl,
+    z: (target.z - eye.z) / fl,
+  };
+  // right = forward × up (up = +y); camera up = right × forward.
+  const rl = Math.hypot(forward.z, forward.x) || 1;
+  const right = { x: -forward.z / rl, y: 0, z: forward.x / rl };
+  const up = {
+    x: right.y * forward.z - right.z * forward.y,
+    y: right.z * forward.x - right.x * forward.z,
+    z: right.x * forward.y - right.y * forward.x,
+  };
+  const focal = height / 2 / Math.tan((fovDeg * DEG) / 2);
+  return (p) => {
+    const q = { x: p.x - eye.x, y: p.y - eye.y, z: p.z - eye.z };
+    const depth = q.x * forward.x + q.y * forward.y + q.z * forward.z;
+    const sx = q.x * right.x + q.y * right.y + q.z * right.z;
+    const sy = q.x * up.x + q.y * up.y + q.z * up.z;
+    return { x: width / 2 + (focal * sx) / depth, y: height / 2 - (focal * sy) / depth, depth };
+  };
+}
+
+/** Vertical field of view of the camera, in degrees (both views). */
+export const FOV = 40;
+
+/** Sticker size in px: smaller on phones, but the button (with its glow) stays over 48 px. */
+export function stickerSize(width: number, height: number): number {
+  return Math.round(Math.min(60, Math.max(46, Math.min(width, height) * 0.12)));
+}
+
+/**
+ * Screen margins for framing: room for the title at the top and the view buttons at the bottom,
+ * plus half a sticker (and its label) beyond the outermost flag.
+ */
+export function viewFrame(width: number, height: number): Frame {
+  const sticker = stickerSize(width, height);
+  return {
+    fovDeg: FOV,
+    aspect: width / height,
+    marginX: Math.min(0.2, (sticker * 0.7 + 8) / width),
+    marginY: Math.min(0.3, (84 + sticker * 0.8) / height),
+  };
+}

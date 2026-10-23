@@ -1,9 +1,10 @@
 import './styles.css';
 import { t } from './i18n/i18n';
-import { renderScene } from './render/scene';
+import { event as findEvent, resolveAge } from './data';
+import { renderHelix2d } from './render/helix-2d';
 import type { HelixView } from './render3d/helix-view';
 import { webglAvailable } from './render3d/support';
-import { createCard } from './ui/card';
+import { createCard, flagCard } from './ui/card';
 import { createViewBar } from './ui/view-bar';
 
 function required(selector: string): HTMLElement {
@@ -64,7 +65,16 @@ function draw2d(animate: boolean): void {
   if (Math.abs(width - drawn.width) < 2 && Math.abs(height - drawn.height) < 60) return;
   drawn = { width, height };
   stage2d.replaceChildren();
-  renderScene(stage2d, { width, height, animate, onSelect: openCard });
+  renderHelix2d(stage2d, {
+    width,
+    height,
+    // The whole story, Now → Big Bang. (The Zoom Ladder, M3, will change this span.)
+    spanYears: resolveAge(findEvent('big-bang')).years,
+    animate,
+    onSelect: (flag) => {
+      openCard(flagCard(flag));
+    },
+  });
 }
 
 function show2d(): void {
@@ -82,7 +92,12 @@ async function show3d(): Promise<void> {
     view3d.resize();
   } else {
     const { mountHelixView } = await import('./render3d/helix-view');
-    view3d = await mountHelixView(stage3d, { onSelect: openCard, reducedMotion });
+    view3d = await mountHelixView(stage3d, {
+      onSelect: (flag) => {
+        openCard(flagCard(flag));
+      },
+      reducedMotion,
+    });
   }
   // Cross-fade: the 2D corkscrew stays visible underneath while the 3D one fades in on top.
   // Measuring the layer first makes the browser apply the starting opacity, so the fade runs

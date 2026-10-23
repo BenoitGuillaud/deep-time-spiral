@@ -130,11 +130,15 @@ export function createHelixPath(helix: Helix, samples = 8192): HelixPath {
   return { helix, length: total, pointAt, fractionAtTurn, turnAt, across, widthAt };
 }
 
-/** The corkscrew used by the app: about 10 coils, tightening to a tenth of the top radius. */
+/**
+ * The corkscrew used by the app: 14 coils tightening to 6% of the top radius (Benoît, 2026-10-23:
+ * "more, tighter coils"). At the whole-story view the Earth is the top ~2.7 coils and about 11 tight
+ * coils wind around the Big Bang.
+ */
 export const CORKSCREW: Helix = {
-  turns: 10,
+  turns: 14,
   topRadius: 1,
-  bottomRadius: 0.1,
+  bottomRadius: 0.06,
   depth: 1.6,
-  topWidth: 0.16,
+  topWidth: 0.12,
 };

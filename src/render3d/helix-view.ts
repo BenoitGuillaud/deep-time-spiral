@@ -31,8 +31,9 @@ import { CSS2DObject, CSS2DRenderer } from 'three/addons/renderers/CSS2DRenderer
 import { event as findEvent, resolveAge } from '../data';
 import { CORKSCREW, createHelixPath, type HelixPath, type Point3 } from '../geometry/helix';
 import { t } from '../i18n/i18n';
-import { COSMOS_COLOR, EVENTS, eventLabel, eventName, type EventMarker } from '../render/events';
-import { formatAgo } from '../render/format';
+import { COSMOS_COLOR } from '../render/events';
+import { outlineOf, placeFlags } from '../render/flag-placement';
+import type { Flag } from '../render/flags';
 import { drawBadge } from '../render/illustrations/icons';
 import { seeded } from '../render/seeded';
 import { spanBands, type Band } from '../render/span-colours';
@@ -40,9 +41,11 @@ import {
   eventPose,
   fitDistance,
   flightPose,
+  FOV,
   presetPose,
+  stickerSize,
+  viewFrame,
   type CameraPose,
-  type Frame,
   type ViewName,
 } from './camera';
 import { helixRibbon } from './helix-ribbon';
@@ -51,7 +54,7 @@ import { helixRibbon } from './helix-ribbon';
 
 export interface HelixViewOptions {
   /** Opens the event card once the camera has arrived. */
-  onSelect: (marker: EventMarker) => void;
+  onSelect: (flag: Flag) => void;
   reducedMotion: boolean;
 }
 
@@ -61,15 +64,10 @@ export interface HelixView {
   dispose(): void;
 }
 
-const FOV = 40;
 const FLIGHT_MS = 1100;
 const IDLE_SPIN_MS = 10_000;
-/** Sticker size in px: smaller on phones, but the button (with its glow) stays over 48 px. */
-const stickerSize = (width: number, height: number): number =>
-  Math.round(Math.min(60, Math.max(46, Math.min(width, height) * 0.12)));
 
 const vec = (p: Point3): Vector3 => new Vector3(p.x, p.y, p.z);
-const dist = (a: Point3, b: Point3): number => Math.hypot(a.x - b.x, a.y - b.y, a.z - b.z);
 
 function glowTexture(inner: string, outer: string): CanvasTexture {
   const size = 128;
@@ -207,7 +205,8 @@ function floatingText(className: string, text: string): CSS2DObject {
 }
 
 interface Target {
-  marker: EventMarker;
+  flag: Flag;
+  id: string;
   pose: CameraPose;
 }
 
@@ -215,11 +214,6 @@ interface Built {
   /** Points along the corkscrew and the flags, for framing the camera. */
   outline: Point3[];
 }
-
-/** Flags closer than this (world units) to an earlier one are raised so they don't overlap. */
-const FLAG_GAP = 0.34;
-const FLAG_BASE = 0.16;
-const FLAG_STEP = 0.22;
 
 /** Builds the corkscrew for a time span (years), with a flag for each event inside it. */
 async function buildContent(
@@ -261,42 +255,25 @@ async function buildContent(
   glow(glowTexture('rgba(255,230,160,1)', 'rgba(255,209,102,0.45)'), now, 0.34);
   glow(glowTexture('rgba(255,250,230,1)', 'rgba(255,170,80,0.5)'), path.pointAt(1), 0.75);
   const you = floatingText('you-label3d', t('spiral.you'));
-  // Just above the Now glow, a little to the left of the people's flag.
-  you.position.set(now.x - 0.14, now.y + 0.06, now.z + 0.04);
+  // Just below the Now glow: the flags stand above it, and below are only the unlabelled coils.
+  you.position.set(now.x - 0.04, now.y - 0.1, now.z + 0.06);
   group.add(you);
 
-  // Event flags: a pole on the exact spot, the picture on top. Neighbours step up so they never
-  // overlap; the Big Bang's flag hangs down from the tip.
-  const outline: Point3[] = Array.from({ length: 201 }, (_, i) => path.pointAt(i / 200));
-  const flags: { foot: Point3; height: number }[] = [];
-  for (const marker of EVENTS) {
-    const years = resolveAge(findEvent(marker.id)).years;
-    if (years > spanYears) continue;
-    const f = years / spanYears;
-    const centre = path.pointAt(f);
-    const foot = { ...centre, y: centre.y + path.widthAt(f) * 0.1 };
-    const down = marker.id === 'big-bang';
-    let height = FLAG_BASE;
-    while (
-      flags.some(
-        (other) => dist(other.foot, foot) < FLAG_GAP && Math.abs(other.height - height) < FLAG_STEP,
-      )
-    ) {
-      height += FLAG_STEP;
-    }
-    flags.push({ foot, height });
-    const top = { ...foot, y: foot.y + (down ? -height : height) };
-    outline.push(top);
+  // Event flags: a pole on the exact spot, the picture on top (placement shared with 2D).
+  const placed = placeFlags(path, spanYears);
+  const outline = outlineOf(path, placed);
+  for (const { flag, look, foot, top } of placed) {
     group.add(
       new Line(
         new BufferGeometry().setFromPoints([vec(foot), vec(top)]),
-        new LineBasicMaterial({ color: marker.ring, transparent: true, opacity: 0.85 }),
+        new LineBasicMaterial({ color: look.ring, transparent: true, opacity: 0.85 }),
       ),
     );
 
-    const radius = Math.hypot(centre.x, centre.z);
+    const radius = Math.hypot(foot.x, foot.z);
     const target: Target = {
-      marker,
+      flag,
+      id: look.id,
       pose: eventPose(top, { x: 0, y: top.y, z: 0 }, 0.5 + 0.9 * radius),
     };
     const wrap = document.createElement('div');
@@ -304,11 +281,8 @@ async function buildContent(
     const button = document.createElement('button');
     button.type = 'button';
     button.className = 'sticker-button';
-    button.dataset.event = marker.id;
-    button.setAttribute(
-      'aria-label',
-      eventName(marker.id, formatAgo(resolveAge(findEvent(marker.id)))),
-    );
+    button.dataset.event = look.id;
+    button.setAttribute('aria-label', look.name);
     const box = badge * 1.32;
     const svg = select(button)
       .append('svg')
@@ -316,13 +290,13 @@ async function buildContent(
       .attr('height', box)
       .attr('viewBox', `${String(-box / 2)} ${String(-box / 2)} ${String(box)} ${String(box)}`)
       .attr('aria-hidden', 'true');
-    drawBadge(svg.append('g'), marker.art, badge, marker.ring);
+    drawBadge(svg.append('g'), look.art, badge, look.ring);
     button.addEventListener('click', () => {
       onPick(target);
     });
     const label = document.createElement('span');
     label.className = 'sticker-label';
-    label.textContent = eventLabel(marker.id);
+    label.textContent = look.label;
     wrap.append(button, label);
     const object = new CSS2DObject(wrap);
     object.position.copy(vec(top));
@@ -397,15 +371,7 @@ export async function mountHelixView(
   // M2 shows the whole story, Now → Big Bang. (The Zoom Ladder, M3, will change this span.)
   const spanYears = resolveAge(findEvent('big-bang')).years;
   let outline: Point3[] = [];
-  const cameraFrame = (): Frame => {
-    const sticker = stickerSize(width, height) * 0.7;
-    return {
-      fovDeg: FOV,
-      aspect,
-      marginX: Math.min(0.2, (sticker + 8) / width),
-      marginY: Math.min(0.25, (Math.max(sticker, 80) + 4) / height),
-    };
-  };
+  const cameraFrame = () => viewFrame(width, height);
   let content = new Group();
   let flight: {
     from: CameraPose;
@@ -497,9 +463,9 @@ export async function mountHelixView(
       path,
       spanYears,
       stickerSize(width, height),
-      ({ marker, pose }) => {
-        flyTo(pose, marker.id, FLIGHT_MS, () => {
-          options.onSelect(marker);
+      ({ flag, id, pose }) => {
+        flyTo(pose, id, FLIGHT_MS, () => {
+          options.onSelect(flag);
         });
       },
     );

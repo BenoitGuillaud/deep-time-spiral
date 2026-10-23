@@ -8,6 +8,7 @@ import {
   flightPose,
   orbit,
   presetPose,
+  projector,
 } from '../../src/render3d/camera';
 
 const distance = (a: { x: number; y: number; z: number }, b: { x: number; y: number; z: number }) =>
@@ -108,5 +109,34 @@ describe('camera', () => {
     const to = { position: { x: 10, y: 0, z: 0 }, target: { x: 0, y: 4, z: 0 } };
     expect(flightPose(from, to, 1)).toEqual(to);
     expect(flightPose(from, to, 0.25).position.x).toBeLessThan(2.5);
+  });
+});
+
+describe('projector', () => {
+  const pose = { position: { x: 0, y: 1, z: 5 }, target: { x: 0, y: 0, z: 0 } };
+  const project = projector(pose, 40, 800, 600);
+
+  it('puts the target in the middle of the screen', () => {
+    const p = project(pose.target);
+    expect(p.x).toBeCloseTo(400, 9);
+    expect(p.y).toBeCloseTo(300, 9);
+  });
+
+  it('draws higher points higher on screen and right-hand points to the right', () => {
+    expect(project({ x: 0, y: 0.5, z: 0 }).y).toBeLessThan(300);
+    expect(project({ x: 0.5, y: 0, z: 0 }).x).toBeGreaterThan(400);
+  });
+
+  it('measures depth along the view, and puts the frame edge at half the field of view', () => {
+    // A level camera looking straight down the -z axis.
+    const level = projector(
+      { position: { x: 0, y: 0, z: 5 }, target: { x: 0, y: 0, z: 0 } },
+      40,
+      800,
+      600,
+    );
+    expect(level({ x: 0, y: 0, z: 4 }).depth).toBeCloseTo(1, 9);
+    // 1 unit ahead and tan(20°) up lands exactly on the top edge of a 40° field of view.
+    expect(level({ x: 0, y: Math.tan((20 * Math.PI) / 180), z: 4 }).y).toBeCloseTo(0, 6);
   });
 });

@@ -56,8 +56,8 @@ describe('the corkscrew', () => {
 
   it('winds the given number of coils, so the old times get many tight coils', () => {
     expect(path.turnAt(1)).toBeCloseTo(CORKSCREW.turns, 9);
-    // The top coil is the longest: much more than one tenth of the whole length.
-    expect(path.fractionAtTurn(1)).toBeGreaterThan(0.15);
+    // The top coil is the longest: much more than an average coil's share of the length.
+    expect(path.fractionAtTurn(1)).toBeGreaterThan(1.5 / CORKSCREW.turns);
   });
 
   it('gives a horizontal unit vector across the ribbon, pointing away from the axis', () => {
