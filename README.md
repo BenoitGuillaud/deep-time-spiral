@@ -25,6 +25,10 @@ browser has WebGL. Spin with one finger, pinch to zoom, slide with two fingers (
 or the **Move** button), and tap a picture to fly to it. Without a graphics chip (WebGL drawn in software, about
 2 frames per second) the page stays in 2D. Add `?view=2d` to the address to stay in 2D, or `?view=3d` to force 3D.
 
+Every visit opens with a slow **journey** (about 45 s) from Now back to the Big Bang, with captions beside the spiral;
+**Skip** (or Escape) jumps to the end and the **Journey** button replays it. `?journey=0` opens straight on the spiral,
+`?journey=fast` plays it 12× faster (both for tests).
+
 ```bash
 npm run build && npm run preview
 ```
